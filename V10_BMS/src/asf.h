@@ -87,6 +87,9 @@
 // From module: SERCOM Polled API
 #include <sercom.h>
 
+// From module: SERCOM USART - Serial Communications (Polled APIs)
+#include <usart.h>
+
 // From module: SYSTEM - Clock Management for SAMD20
 #include <clock.h>
 #include <gclk.h>

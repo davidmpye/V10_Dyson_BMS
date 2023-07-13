@@ -11,9 +11,11 @@
 #include "leds.h"
 #include "board.h"
 #include "bq7693.h"
+#include "serial.h"
 
 void charge(void);
 void discharge(void);
+
 
 bool is_safe_to_charge() {
 	bq7693_update_voltages();
@@ -92,8 +94,8 @@ void charge() {
 	leds_display_battery_voltage(bq7693_get_pack_voltage());
 	
 	while (1) {
-		 //Charger unplugged or not safe to charge.
 		 if (port_pin_get_input_level(CHARGER_CONNECTED_PIN) == false || !is_safe_to_charge()) {
+			 //Charger unplugged or not safe to charge.
 			 //Disable charging.
 			 port_pin_set_output_level(PIN_PA02, false);
 			 bq7693_disable_charge();
@@ -159,6 +161,7 @@ void discharge() {
 	leds_off();
 }
 
+
 int main (void){
 	//We've been either RESET or woken up by the BQ7693
 	//It will wake us up either because the microswitch has been pressed, or because the charger
@@ -188,7 +191,28 @@ int main (void){
 	leds_init();
 	//Do pretty welcome sequence
 	leds_sequence();
+	//Initialise the USART we need to talk to the vacuum cleaner
+	serial_init();
 	
+  
+		while (1){
+			serial_reset_message_counter();
+
+		if(port_pin_get_input_level(TRIGGER_PRESSED_PIN)) {
+			bq7693_enable_discharge();
+			delay_ms(200);
+		}
+		while (port_pin_get_input_level(TRIGGER_PRESSED_PIN) == true) {
+
+			if (is_safe_to_discharge()) bq7693_enable_discharge();
+			serial_send_next_message();
+			delay_ms(60);
+							
+		}
+		bq7693_disable_discharge();
+		delay_ms(50);
+		}
+
 	//Main loop waits for 5 seconds since last event then we go to sleep until woken.
 	for (int i=0; i< 5000/50; ++i) {
 		if (port_pin_get_input_level(CHARGER_CONNECTED_PIN) == true) {
@@ -202,6 +226,11 @@ int main (void){
 		}
 		delay_ms(50);
 	}
+	
+	//Try hammering out some UART data.
+	
+	
+	
 
 	//Nothing happened, bored now.
 	leds_sequence();

@@ -3,8 +3,6 @@
  *
  * Created: 06/07/2023 15:43:31
  *  Author: David Pye
- *  Lots of info and code (esp crc etc) from https://github.com/LibreSolar/bq769x0-arduino-library
- *  Licenced under the GNU GPL V3 or later
  */ 
 
 
