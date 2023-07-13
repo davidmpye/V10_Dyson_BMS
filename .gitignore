@@ -1,0 +1,11 @@
+
+.vs/V10_BMS/v14/.atsuo
+*.d
+*.o
+*.bin
+*.eep
+*.elf
+*.hex
+*.lss
+*.map
+*.srec

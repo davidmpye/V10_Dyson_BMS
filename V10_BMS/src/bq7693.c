@@ -39,9 +39,6 @@ const int OCD_threshold_setting [16] =
 const uint8_t UV_delay_setting [4] = { 1, 4, 8, 16 }; // s
 const uint8_t OV_delay_setting [4] = { 1, 2, 4, 8 }; // s
 
-
-
-
 struct i2c_master_module i2c_master_instance;
 //Helper function for setting the pinmux
 static inline void pin_set_peripheral_function(uint32_t pinmux) {
@@ -94,8 +91,7 @@ void bq7693_init() {
 	
 	bq7693_read_register(SYS_STAT, 1, &scratch1);
 	bq7693_write_register(SYS_STAT, scratch1); //Explicitly clear any set bits in the SYS_STAT register by writing them back. 
-	
-	
+		
 	bq7693_update_voltages();	
 }
 
@@ -137,7 +133,6 @@ int bq7693_write_register(uint8_t addr, uint8_t value) {
 	uint8_t crc = bq7693_calc_checksum(0x00, (BQ7693_ADDR <<1) | 0);
 	crc = bq7693_calc_checksum(crc, buf[0]);
 	crc = bq7693_calc_checksum(crc, buf[1]);
-	
 	buf[2] = crc;
 
 	//Initial write to set register address.
@@ -148,7 +143,6 @@ int bq7693_write_register(uint8_t addr, uint8_t value) {
 	};
 		
 	uint16_t timeout = 0;
-
 
 	//Tx address
 	while (i2c_master_write_packet_wait(&i2c_master_instance, &packet) != STATUS_OK) {
@@ -180,7 +174,8 @@ void bq7693_update_voltages() {
 	volatile uint16_t tempval;
 	volatile uint16_t vals[7];
 	
-	//The cells are connected as below...
+	//Voltages for each cell
+	//The cells are connected as below on these packs...
 	int cellsToRead[] = { 0,1,2,3,5,6,9};
 	for (int i=0; i< 7; ++i) {
 		//Because CRC is enabled, we need to read 3 bytes (VCx_HI, the CRC byte (ignore), then VCx_Lo)
@@ -189,7 +184,7 @@ void bq7693_update_voltages() {
 		bq7693_cell_voltages[i] = tempval * bq7693_adc_gain/1000 + bq7693_adc_offset;
 		vals[i] = bq7693_cell_voltages[i];
 	}
-	
+	//Pack voltage (separate register vals)
 	bq7693_read_register(BAT_HI_BYTE, 3, scratch);
 	tempval = scratch[0] <<8 | scratch[2];
 	bq7693_pack_voltage = 4 * bq7693_adc_gain * tempval / 1000 + ( 7 * bq7693_adc_offset);
@@ -200,7 +195,7 @@ void bq7693_enable_charge() {
 }
 
 void bq7693_disable_charge() {
-		bq7693_write_register(SYS_CTRL2, 0x40); //CC_EN, CHG_ON = 0
+	bq7693_write_register(SYS_CTRL2, 0x40); //CC_EN, CHG_ON = 0
 }
 
 void bq7693_enable_discharge() {
@@ -216,7 +211,6 @@ void bq7693_enable_discharge() {
 	bq7693_write_register(PROTECT2, 0x04);
 	bq7693_write_register(PROTECT1, 0x82);
 	bq7693_write_register(SYS_STAT, 0x80);
-	
 }
 
 void bq7693_disable_discharge() {
@@ -235,19 +229,16 @@ float bq7693_read_temperatures() {
 	adcVal =  ((scratch[0]&0x3F)<<8);
 	adcVal |= scratch[2]; //ignore the unwanted CRC bit.
 		
-	 // calculate R_thermistor according to bq769x0 datasheet
-	 vtsx = adcVal * 0.382f; // mV
-	 rts = 10000.0 * vtsx / (3300.0f - vtsx); // Ohm
+	// calculate R_thermistor according to bq769x0 datasheet
+	vtsx = adcVal * 0.382f; // mV
+	rts = 10000.0 * vtsx / (3300.0f - vtsx); // Ohm
 	 
-	 // Temperature calculation using Beta equation
-	 // - According to bq769x0 datasheet, only 10k thermistors should be used
-	 // - 25°C reference temperature for Beta equation assumed
-	 tmp = 1.0/    (   (1.0/(273.15+25)) +  ( (1.0/4000) *log((16384.0/rts) -1)    )   ); // K
- 	volatile float result = tmp - 273.15;
-	 return result;
-	 
-	 
-	 
+	// Temperature calculation using Beta equation
+	// - According to bq769x0 datasheet, only 10k thermistors should be used
+	// - 25°C reference temperature for Beta equation assumed
+	tmp = 1.0/    (   (1.0/(273.15+25)) +  ( (1.0/4000) *log((16384.0/rts) -1)    )   ); // K
+	volatile float result = tmp - 273.15;
+	return result;
 }
 
 volatile uint16_t *bq7693_get_cell_voltages() {

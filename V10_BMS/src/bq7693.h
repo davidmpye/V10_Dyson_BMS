@@ -21,7 +21,6 @@
 #define BQ7693_ADDR 0x08
 #define BQ7693_TIMEOUT 100
 
-
 #define THERMISTOR_BETA_VALUE 3435.0  // typical value for Semitec 103AT-5 thermistor
 
 void bq7693_init(void);
@@ -39,8 +38,6 @@ void bq7693_disable_discharge();
 
 void bq7693_enter_sleep_mode(void);
 float bq7693_read_temperatures(void);
-//Register map obtained from:
-//https://github.com/LibreSolar/bq769x0-arduino-library
 
 // register map
 #define SYS_STAT        0x00
@@ -215,7 +212,5 @@ typedef union regVCELL
 	} bytes;
 	uint16_t regWord;
 } regVCELL_t;
-
-
 
 #endif /* BQ7693_H_ */
