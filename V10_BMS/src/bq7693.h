@@ -28,13 +28,13 @@ void bq7693_read_register(uint8_t addr, size_t len, uint8_t *buf);
 int bq7693_write_register(uint8_t addr, uint8_t data);
 
 volatile uint16_t* bq7693_get_cell_voltages(void);
-void bq7693_update_voltages();
+void bq7693_update_voltages(void);
 volatile int bq7693_get_pack_voltage(void);
-void bq7693_enable_charge();
-void bq7693_enable_discharge();
+void bq7693_enable_charge(void);
+void bq7693_enable_discharge(void);
 
-void bq7693_disable_charge();
-void bq7693_disable_discharge();
+void bq7693_disable_charge(void);
+void bq7693_disable_discharge(void);
 
 void bq7693_enter_sleep_mode(void);
 float bq7693_read_temperatures(void);

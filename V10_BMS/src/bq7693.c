@@ -171,9 +171,7 @@ uint8_t bq7693_calc_checksum(uint8_t inCrc, uint8_t inData) {
 
 void bq7693_update_voltages() {	
 	volatile uint8_t scratch[3];
-	volatile uint16_t tempval;
-	volatile uint16_t vals[7];
-	
+	volatile uint16_t tempval;	
 	//Voltages for each cell
 	//The cells are connected as below on these packs...
 	int cellsToRead[] = { 0,1,2,3,5,6,9};
@@ -182,7 +180,6 @@ void bq7693_update_voltages() {
 		bq7693_read_register((VC1_HI_BYTE + 2*cellsToRead[i]), 3, scratch);
 		tempval = ((scratch[0] & 0x3F) <<8) | scratch[2];
 		bq7693_cell_voltages[i] = tempval * bq7693_adc_gain/1000 + bq7693_adc_offset;
-		vals[i] = bq7693_cell_voltages[i];
 	}
 	//Pack voltage (separate register vals)
 	bq7693_read_register(BAT_HI_BYTE, 3, scratch);
