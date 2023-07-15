@@ -1,12 +1,20 @@
 # V10_Dyson_BMS
 A reworked unofficial firmware for Dyson V10 Battery Management Systems
 
-THIS DOESNT WORK YET.
+Lots more documentation needed. 
 
-Current state of functionality:
+TL:DR update of current position:
 
-Can accept charge and charge up the pack to appropriate level.
-Will output power when trigger is pulled.
-However, comms-pin functionality not yet implemented, without which it will not operate the V10 vacuum cleaner....
+What works:
 
-So, unless you want to have a go at developing it, don't try it yet!
+- can charge pack, can drive vacuum cleaner, including the USART comms to keep the cleaner working
+- Probably a fair number of odd glitches though
+
+Problems
+- doesn't use the rest of the status LEDs to reflect cleaner problems eg Blocked/Filter statuses
+- doesn't use the coulomb charge counter to monitor pack charge, just displays guestimates based on cell voltage.
+
+The biggie:
+
+Can't flash it without an Atmel-ICE programmer and the (free) Microchip studio.   This is because OpenOCD won't 'unlock and erase' the chip protection on the chip by itself.
+If we could fix that (should be possible in theory) then it MIGHT be possible to use a Raspberry Pi or similar to flash the pack!
