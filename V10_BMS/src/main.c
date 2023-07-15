@@ -55,20 +55,11 @@ bool is_safe_to_discharge() {
 	volatile int lowest_cell = 0;
 	
 	for (int i=0; i<7;++i) {
-		if (cell_voltages[i] > cell_voltages[highest_cell]) {
-			highest_cell = i;
-		}
-		if (cell_voltages[i] < cell_voltages[lowest_cell]) {
-			lowest_cell = i;
+		if (cell_voltages[i] < CELL_LOWEST_DISCHARGE_VOLTAGE) {
+			return false;
 		}
 	}
-	
-	if (cell_voltages[lowest_cell] < CELL_LOWEST_DISCHARGE_VOLTAGE) {
-		return false;
-	}
-	
 	return true;
-	
 }
 int pack_spread_volts() {
 	bq7693_update_voltages();
@@ -152,15 +143,16 @@ void discharge() {
 		//Reset the USART message counter to start of message sequence
 		serial_reset_message_counter();
 		//Brief pause to allow vac to wake up before we start sending serial data at it.
-		delay_ms(200);
+		delay_ms(260);
 	}
 	while (port_pin_get_input_level(TRIGGER_PRESSED_PIN) == true && is_safe_to_discharge()) {
 		//Show the battery 'SoC' (yeah, I know, just voltage for now)
-		leds_off();
-		leds_display_battery_voltage(bq7693_get_pack_voltage());
+		//leds_off();
+		//leds_display_battery_voltage(bq7693_get_pack_voltage());
 		//Send the USART traffic we need to supply to keep the cleaner running
 		serial_send_next_message();
-		delay_ms(60);
+		delay_ms(60);//60
+
 	}
 	bq7693_disable_discharge();	
 	leds_off();
@@ -176,7 +168,7 @@ int main (void){
 	system_init();
 	//Initialise the delay system
 	delay_init(); 
-	bq7693_init();
+	bq7693_init();  
 	
 	//This needs farmed out into an init routine
 	struct port_config charge_pin_config;
