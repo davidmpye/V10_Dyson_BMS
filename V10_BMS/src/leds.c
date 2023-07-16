@@ -52,7 +52,7 @@ void leds_display_battery_voltage(int voltage) {
 	if (voltage>27650) {
 		port_pin_set_output_level(LED_BAT_MED, true );
 	}
-	if (voltage > 28000) {
+	if (voltage > 28500) {
 		port_pin_set_output_level(LED_BAT_HI, true );
 	}
 }
@@ -65,7 +65,7 @@ void leds_flash_charging_segment(int voltage) {
 		port_pin_set_output_level(LED_BAT_LO, false );
 		delay_ms(500);
 	}
-	else if (voltage>27650 && voltage < 28000) {
+	else if (voltage>27650 && voltage < 28500) {
 		//Low on, flash med
 		port_pin_set_output_level(LED_BAT_LO, true );
 	
