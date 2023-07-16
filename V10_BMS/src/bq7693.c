@@ -95,8 +95,10 @@ void bq7693_init() {
 	bq7693_update_voltages();	
 }
 
-void bq7693_read_register(uint8_t addr, size_t len, uint8_t *buf) {
+bool bq7693_read_register(uint8_t addr, size_t len, uint8_t *buf) {
 	uint16_t timeout = 0;
+	bool result = true;
+	
 	//Initial write to set register address.
 	struct i2c_master_packet packet = {
 		.address = BQ7693_ADDR,
@@ -118,13 +120,17 @@ void bq7693_read_register(uint8_t addr, size_t len, uint8_t *buf) {
 	while (i2c_master_read_packet_wait(&i2c_master_instance, &packet) != STATUS_OK) {
 		/* Increment timeout counter and check if timed out. */
 		if (timeout++ == BQ7693_TIMEOUT) {
+			result = false;
 			break;
 		}
 	}
+	return result;
 }
 
-int bq7693_write_register(uint8_t addr, uint8_t value) {
-
+bool bq7693_write_register(uint8_t addr, uint8_t value) {
+	uint16_t timeout = 0;
+	bool result = true;
+	
 	uint8_t buf[3];
 	buf[0] = addr;
 	buf[1] = value;
@@ -141,17 +147,15 @@ int bq7693_write_register(uint8_t addr, uint8_t value) {
 		.data_length = 3,
 		.data = buf
 	};
-		
-	uint16_t timeout = 0;
-
-	//Tx address
+	
 	while (i2c_master_write_packet_wait(&i2c_master_instance, &packet) != STATUS_OK) {
 		/* Increment timeout counter and check if timed out. */
 		if (timeout++ == BQ7693_TIMEOUT) {
+			result = false;
 			break;
 		}
 	}
-	return 0;
+	return result;
 }
 
 uint8_t bq7693_calc_checksum(uint8_t inCrc, uint8_t inData) {
