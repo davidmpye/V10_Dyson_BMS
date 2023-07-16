@@ -147,8 +147,8 @@ void discharge() {
 	}
 	while (port_pin_get_input_level(TRIGGER_PRESSED_PIN) == true && is_safe_to_discharge()) {
 		//Show the battery 'SoC' (yeah, I know, just voltage for now)
-		//leds_off();
-		//leds_display_battery_voltage(bq7693_get_pack_voltage());
+		leds_off();
+		leds_display_battery_voltage(bq7693_get_pack_voltage());
 		//Send the USART traffic we need to supply to keep the cleaner running
 		serial_send_next_message();
 		delay_ms(60);//60
@@ -191,8 +191,8 @@ int main (void){
 	//Initialise the USART we need to talk to the vacuum cleaner
 	serial_init();
 
-	//Main loop waits for 5 seconds since last event then we go to sleep until woken.
-	for (int i=0; i< 5000/50; ++i) {
+	//Main loop waits for 30 seconds since last event then we go to sleep until woken.
+	for (int i=0; i< 30000/50; ++i) {
 		if (port_pin_get_input_level(CHARGER_CONNECTED_PIN) == true) {
 			//start charge.
 			charge();

@@ -39,7 +39,8 @@
 //PA07 appears to go to the comparator 2nd pin down (IN-?) 
 //Thermistor RT2 is connected as TS2 via the BQ7693
 
-#define CELL_LOWEST_DISCHARGE_VOLTAGE 3000 //mV - wont allow pack to be used if any cells lower than this
+//Some packs have Molicell INR18650P26a - datasheet https://www.molicel.com/wp-content/uploads/INR18650P26A-V2-80087.pdf
+#define CELL_LOWEST_DISCHARGE_VOLTAGE 2500 //mV - wont allow pack to be used if any cells lower than this
 #define CELL_LOWEST_CHARGE_VOLTAGE 2000 //mV - won't try to charge the pack if any cells lower than this
 #define CELL_FULL_CHARGE_VOLTAGE 4150 //mV - .
  
