@@ -232,12 +232,12 @@ void bms_handle_charging() {
 				
 		if ( !port_pin_get_input_level(CHARGER_CONNECTED_PIN)) {
 			//Charger unplugged.
-			//Turn off charging, and return to idle.
+			//Turn off charging
 			port_pin_set_output_level(ENABLE_CHARGE_PIN, false);
 			bq7693_disable_charge();
 
 			leds_off();
-			bms_state = BMS_IDLE;
+			bms_state = BMS_CHARGER_UNPLUGGED;
 			return;
 		}
 				
@@ -257,7 +257,7 @@ void bms_handle_charging() {
 				if (!port_pin_get_input_level(CHARGER_CONNECTED_PIN)) {
 					//Charger's been unplugged.
 					leds_off();
-					bms_state = BMS_IDLE;
+					bms_state = BMS_CHARGER_UNPLUGGED;
 					return;
 				}
 			}			
@@ -277,10 +277,35 @@ void bms_handle_charging() {
 
 			bms_state = BMS_CHARGER_CONNECTED_NOT_CHARGING;
 			return;	
+		}			
+	}
+}
+
+void bms_handle_charger_unplugged() {
+	//Do a little flash to show how out of sync the pack is, then go to idle.
+	bq7693_update_voltages();
+	uint16_t *cell_voltages = bq7693_get_cell_voltages();
+		
+	uint8_t highest_cell = 0;
+	uint8_t lowest_cell = 0;
+		
+	for (int i=0; i<7;++i) {
+		if (cell_voltages[i] > cell_voltages[highest_cell]) {
+			highest_cell = i;
 		}
-				
+		if (cell_voltages[i] < cell_voltages[lowest_cell]) {
+			lowest_cell = i;
+		}
 	}
 	
+	uint16_t spread = cell_voltages[highest_cell] - cell_voltages[lowest_cell];
+	
+	//Flash the error led for 100ms for each 50mV the pack is out of balance
+	for (int i=0; i<round(spread/50); ++i) {
+		leds_blink_error_led(100);	
+	}
+	
+	bms_state = BMS_IDLE;
 }
 
 
@@ -305,6 +330,9 @@ void bms_mainloop() {
 				break;
 			case BMS_CHARGER_CONNECTED_NOT_CHARGING:
 				bms_handle_charger_connected_not_charging();
+				break;
+			case BMS_CHARGER_UNPLUGGED:
+				bms_handle_charger_unplugged();
 				break;
 			case BMS_DISCHARGING:
 				bms_handle_discharging();
