@@ -614,6 +614,12 @@
     <Folder Include="src\config\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\bms.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\bms.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\serial.c">
       <SubType>compile</SubType>
     </Compile>

@@ -46,6 +46,11 @@ void leds_on() {
 }
 
 void leds_display_battery_voltage(int voltage) {
+	//LEDs off to start
+	port_pin_set_output_level(LED_BAT_LO, false );
+	port_pin_set_output_level(LED_BAT_MED, false );
+	port_pin_set_output_level(LED_BAT_HI, false );
+
 	//Three LEDs to indicate SoC, so 0-35, 35-70, 70-100.
 	//Voltage thresholds:   
 	port_pin_set_output_level(LED_BAT_LO, true );

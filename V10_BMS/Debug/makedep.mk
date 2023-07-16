@@ -2,6 +2,8 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
+src\bms.c
+
 src\serial.c
 
 src\ASF\common2\services\delay\sam0\systick_counter.c
