@@ -1,5 +1,5 @@
 # V10_Dyson_BMS
-A reworked unofficial firmware for Dyson V10 Battery Management Systems
+A written-from-scratch unofficial firmware for Dyson V10 Battery Management Systems
 
 Lots more documentation needed. 
 
