@@ -1,5 +1,8 @@
 # V10_Dyson_BMS
+
 A written-from-scratch unofficial firmware for Dyson V10 Battery Management Systems
+
+Have a read of the [Wiki](https://github.com/davidmpye/V10_Dyson_BMS/wiki) for the most up to date information about the state of the project.
 
 Lots more documentation needed. 
 
@@ -13,8 +16,11 @@ What works:
 Problems
 - doesn't use the rest of the status LEDs to reflect cleaner problems eg Blocked/Filter statuses
 - doesn't use the coulomb charge counter to monitor pack charge, just displays guestimates based on cell voltage.
+- doesn't check temperatures when charging the pack
+- No cell balancing (same as stock), I doubt this can be fixed.
+- Not very helpful about error codes at the moment!
 
-The biggie:
 
-Can't flash it without an Atmel-ICE programmer and the (free) Microchip studio.   This is because OpenOCD won't 'unlock and erase' the chip protection on the chip by itself.
-If we could fix that (should be possible in theory) then it MIGHT be possible to use a Raspberry Pi or similar to flash the pack!
+![v10small](https://github.com/davidmpye/V10_Dyson_BMS/assets/2261985/1e88cf50-33de-437f-a9fb-07bd52d1e4b9)
+
+
