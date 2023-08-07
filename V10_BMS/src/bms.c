@@ -64,6 +64,7 @@ bool bms_is_safe_to_discharge() {
 		bms_error = BMS_ERR_PACK_OVERTEMP;
 		return false;
 	}
+	//Ought to be checking SYS_STAT here.
 	
 	return true;
 }
@@ -85,9 +86,8 @@ bool bms_is_safe_to_charge() {
 		bms_error = BMS_ERR_PACK_OVERTEMP;
 		return false;
 	}
-	//Need to check the SYS_STAT status to check it's happy too..
+	//Ought to be checking SYS_STAT here.
 	
-	//All seems OK
 	return true;
 }
 
@@ -104,8 +104,8 @@ bool bms_is_pack_full() {
 
 
 void bms_handle_idle() {
-	//Three potential ways out of this state.
-	for (int i=0; i< 30000/50; ++i) {
+	//Three potential ways out of this state - someone pulls the trigger, plugs in a charger, or the IDLE_TIME is exceeded and we go to sleep.
+	for (int i=0; i<  (IDLE_TIME * 1000) / 50; ++i) {
 		if (port_pin_get_input_level(CHARGER_CONNECTED_PIN) == true) {
 			bms_state = BMS_CHARGER_CONNECTED;
 			return;

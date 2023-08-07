@@ -37,5 +37,6 @@
 #define CELL_FULL_CHARGE_VOLTAGE 4200 //mV - fully charged cell voltage.
 
 #define MAX_PACK_TEMPERATURE 60 //'C - if pack temperature greater than this, charge and discharge will be disallowed.
- 
+
+#define IDLE_TIME 60 //Idle time in seconds - pack will go into SHIP/deep sleep mode if nothing happens in this duration
 #endif /* CONFIG_H_ */
