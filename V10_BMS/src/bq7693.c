@@ -18,7 +18,6 @@ int bq7693_write_block(uint8_t start_addr, size_t len, uint8_t *buf);
 uint8_t bq7693_calc_checksum(uint8_t inCrc, uint8_t data);
 
 volatile uint16_t bq7693_cell_voltages[7];
-volatile int bq7693_pack_voltage;
 
 volatile int bq7693_adc_gain = 0;   // in uV/LSB
 volatile int bq7693_adc_offset = 0; //in mV
@@ -91,8 +90,6 @@ void bq7693_init() {
 	
 	bq7693_read_register(SYS_STAT, 1, &scratch1);
 	bq7693_write_register(SYS_STAT, scratch1); //Explicitly clear any set bits in the SYS_STAT register by writing them back. 
-		
-	bq7693_update_voltages();	
 }
 
 bool bq7693_read_register(uint8_t addr, size_t len, uint8_t *buf) {
@@ -173,24 +170,6 @@ uint8_t bq7693_calc_checksum(uint8_t inCrc, uint8_t inData) {
 	return data;
 }
 
-void bq7693_update_voltages() {	
-	volatile uint8_t scratch[3];
-	volatile uint16_t tempval;	
-	//Voltages for each cell
-	//The cells are connected as below on these packs...
-	int cellsToRead[] = { 0,1,2,3,5,6,9};
-	for (int i=0; i< 7; ++i) {
-		//Because CRC is enabled, we need to read 3 bytes (VCx_HI, the CRC byte (ignore), then VCx_Lo)
-		bq7693_read_register((VC1_HI_BYTE + 2*cellsToRead[i]), 3, scratch);
-		tempval = ((scratch[0] & 0x3F) <<8) | scratch[2];
-		bq7693_cell_voltages[i] = tempval * bq7693_adc_gain/1000 + bq7693_adc_offset;
-	}
-	//Pack voltage (separate register vals)
-	bq7693_read_register(BAT_HI_BYTE, 3, scratch);
-	tempval = scratch[0] <<8 | scratch[2];
-	bq7693_pack_voltage = 4 * bq7693_adc_gain * tempval / 1000 + ( 7 * bq7693_adc_offset);
-}
-
 void bq7693_enable_charge() {
 	bq7693_write_register(SYS_CTRL2, 0x41); //CC_EN, CHG_ON
 }
@@ -243,10 +222,27 @@ float bq7693_read_temperatures() {
 }
 
 volatile uint16_t *bq7693_get_cell_voltages() {
+	volatile uint8_t scratch[3];
+	volatile uint16_t tempval;
+	//Voltages for each cell
+	//The cells are connected as below on these packs...
+	int cellsToRead[] = { 0,1,2,3,5,6,9};
+	for (int i=0; i< 7; ++i) {
+		//Because CRC is enabled, we need to read 3 bytes (VCx_HI, the CRC byte (ignore), then VCx_Lo)
+		bq7693_read_register((VC1_HI_BYTE + 2*cellsToRead[i]), 3, scratch);
+		tempval = ((scratch[0] & 0x3F) <<8) | scratch[2];
+		bq7693_cell_voltages[i] = tempval * bq7693_adc_gain/1000 + bq7693_adc_offset;
+	}
+
 	return bq7693_cell_voltages;
 }
 
 volatile int bq7693_get_pack_voltage() {
+	volatile uint8_t scratch[3];
+	volatile uint16_t tempval;
+	bq7693_read_register(BAT_HI_BYTE, 3, scratch);
+	tempval = scratch[0] <<8 | scratch[2];
+	int bq7693_pack_voltage = 4 * bq7693_adc_gain * tempval / 1000 + ( 7 * bq7693_adc_offset);
 	return bq7693_pack_voltage;
 }
 

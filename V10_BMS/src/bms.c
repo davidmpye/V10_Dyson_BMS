@@ -28,7 +28,6 @@ void pins_init() {
 }
 
 bool bms_is_safe_to_discharge() {
-	bq7693_update_voltages();
 	uint16_t *cell_voltages = bq7693_get_cell_voltages();
 	
 	for (int i=0; i<7;++i) {
@@ -40,7 +39,6 @@ bool bms_is_safe_to_discharge() {
 }
 
 bool bms_is_safe_to_charge() {
-	bq7693_update_voltages();
 	uint16_t *cell_voltages = bq7693_get_cell_voltages();
 	
 	for (int i=0; i<7;++i) {
@@ -57,8 +55,6 @@ bool bms_is_safe_to_charge() {
 }
 
 bool bms_is_pack_full() {
-	
-	bq7693_update_voltages();
 	uint16_t *cell_voltages = bq7693_get_cell_voltages();
 	//If any cells are at their full charge voltage, we are full.
 	for (int i=0; i<7;++i) {
@@ -159,7 +155,6 @@ void bms_handle_discharging() {
 		//No errors, and trigger pressed, so we continue to discharge.
 		
 		//Show the battery voltage on the LEDs.
-		bq7693_update_voltages();
 		leds_display_battery_voltage(bq7693_get_pack_voltage());
 		
 		//Send the USART traffic we need to supply to keep the cleaner running
@@ -283,7 +278,6 @@ void bms_handle_charging() {
 
 void bms_handle_charger_unplugged() {
 	//Do a little flash to show how out of sync the pack is, then go to idle.
-	bq7693_update_voltages();
 	uint16_t *cell_voltages = bq7693_get_cell_voltages();
 		
 	uint8_t highest_cell = 0;
