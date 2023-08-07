@@ -123,8 +123,6 @@ void bms_handle_idle() {
 }
 
 void bms_handle_trigger_pulled() {
-	//Display volts
-	leds_display_battery_voltage(bq7693_get_pack_voltage());
 	//Check if it's safe to discharge or not.
 	if (bms_is_safe_to_discharge()) {
 		//All go - unleash the power!
@@ -184,6 +182,7 @@ void bms_handle_discharging() {
 }
 
 void bms_handle_fault() {
+	leds_off();
 	if (bms_error == BMS_ERR_PACK_DISCHARGED) {
 		//If the problem is just a flat pack, blink the lowest battery segment three times.
 		leds_show_pack_flat();
@@ -191,8 +190,9 @@ void bms_handle_fault() {
 	else {
 		//Flash the red error led the number of times indicated by the fault code.
 		for (int i=0; i<bms_error; ++i) {
-			leds_blink_error_led(250);
+			leds_blink_error_led(500);
 		}
+		delay_ms(2000);
 		bms_state = BMS_IDLE;
 	}
 }
