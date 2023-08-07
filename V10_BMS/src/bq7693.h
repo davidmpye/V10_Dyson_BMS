@@ -36,7 +36,7 @@ void bq7693_disable_charge(void);
 void bq7693_disable_discharge(void);
 
 void bq7693_enter_sleep_mode(void);
-float bq7693_read_temperatures(void);
+int bq7693_read_temperature(void);
 
 // register map
 #define SYS_STAT        0x00

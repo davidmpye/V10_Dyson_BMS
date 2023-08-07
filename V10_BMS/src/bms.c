@@ -29,25 +29,37 @@ void pins_init() {
 
 bool bms_is_safe_to_discharge() {
 	uint16_t *cell_voltages = bq7693_get_cell_voltages();
-	
+	//Check any cells undervolt.
 	for (int i=0; i<7;++i) {
 		if (cell_voltages[i] < CELL_LOWEST_DISCHARGE_VOLTAGE) {
 			return false;
 		}
 	}
+	
+	//Check pack temperature acceptable (<=60'C)	
+	int temp = bq7693_read_temperature();
+	if (temp/10  > MAX_PACK_TEMPERATURE) {
+		return false;
+	}
+	
 	return true;
 }
 
 bool bms_is_safe_to_charge() {
 	uint16_t *cell_voltages = bq7693_get_cell_voltages();
 	
+	//Check no cells are so flat they cannot be charged.
 	for (int i=0; i<7;++i) {
 		if ( cell_voltages[i] < CELL_LOWEST_CHARGE_VOLTAGE ) {
 			return false;
 		}
 	}
-	//Need to check temperatures too....
 
+	//Check pack temperature acceptable (<=60'C)	
+	int temp = bq7693_read_temperature();
+	if (temp/10  > MAX_PACK_TEMPERATURE) {
+		return false;
+	}
 	//Need to check the SYS_STAT status to check it's happy too..
 	
 	//All seems OK
@@ -65,7 +77,7 @@ bool bms_is_pack_full() {
 	return false;
 }
 
-
+volatile int pack_temp = 0;
 	
 void bms_init() {
 	//sets up clocks/IRQ handlers etc.
@@ -81,7 +93,7 @@ void bms_init() {
 	//Do pretty welcome sequence
 	leds_sequence();
 	//Initialise the USART we need to talk to the vacuum cleaner
-	serial_init();
+	serial_init();		
 }
 
 void bms_handle_idle() {
@@ -97,6 +109,7 @@ void bms_handle_idle() {
 		}
 		delay_ms(50);
 	}
+	
 	//Reached the end of our wait loop, with nobody pulling the trigger, or plugging in charger.
 	//Transit to sleep state
 	bms_state = BMS_SLEEP;
@@ -123,7 +136,7 @@ void bms_handle_sleep() {
 	while(1);
 }
 
-void bms_handle_discharging() {
+void bms_handle_discharging() {		
 	if (bms_is_safe_to_discharge()) {
 		//Sanity check, hopefully already checked prior to here!
 		bq7693_enable_discharge();
@@ -134,7 +147,7 @@ void bms_handle_discharging() {
 	}
 	
 	while (1) {
-		if (!port_pin_get_input_level(TRIGGER_PRESSED_PIN)   || !bms_is_safe_to_discharge) {
+		if (!port_pin_get_input_level(TRIGGER_PRESSED_PIN)   || !bms_is_safe_to_discharge()) {
 			//Either trigger released, or a fault has occurred.
 			//Shut off the power.
 			bq7693_disable_discharge();
@@ -214,6 +227,7 @@ void bms_handle_charging() {
 		//Charging now in progress.		
 		//Show flashing LED segment to indicate we are charging.
 		leds_flash_charging_segment(bq7693_get_pack_voltage());
+	
 		
 		if (!bms_is_safe_to_charge()) {
 			//Safety error.

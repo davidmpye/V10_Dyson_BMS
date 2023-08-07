@@ -197,9 +197,11 @@ void bq7693_disable_discharge() {
 	bq7693_write_register(SYS_CTRL2, 0x40);//CC_EN, DSG_OFF
 }
 
-float bq7693_read_temperatures() {
+int bq7693_read_temperature() {
+	//Returns 'C * 10 eg 217 = 21.7'C
+	
 	volatile uint8_t scratch[3];
- 	volatile uint16_t adcVal = 0;
+ 	volatile int adcVal = 0;
 
 	volatile unsigned long  rts;
 	volatile int vtsx;
@@ -207,17 +209,17 @@ float bq7693_read_temperatures() {
 	bq7693_read_register(TS2_HI_BYTE, 3, scratch);
 
 	adcVal =  ((scratch[0]&0x3F)<<8);
-	adcVal |= scratch[2]; //ignore the unwanted CRC bit.
+	adcVal |= scratch[2]; //ignore the unwanted CRC byte.
 		
 	// calculate R_thermistor according to bq769x0 datasheet
-	vtsx = adcVal * 0.382f; // mV
-	rts = 10000.0 * vtsx / (3300.0f - vtsx); // Ohm
+	vtsx = adcVal * 0.382; // mV
+	rts = 10000.0 * vtsx / (3300.0 - vtsx); // Ohm
 	 
 	// Temperature calculation using Beta equation
 	// - According to bq769x0 datasheet, only 10k thermistors should be used
 	// - 25°C reference temperature for Beta equation assumed
-	tmp = 1.0/    (   (1.0/(273.15+25)) +  ( (1.0/4000) *log((16384.0/rts) -1)    )   ); // K
-	volatile float result = tmp - 273.15;
+    tmp = 1.0/(1.0/(273.15+25) + 1.0/3435 *log(rts/10000.0)); // K
+	volatile int result = (tmp - 273.15)* 10;
 	return result;
 }
 

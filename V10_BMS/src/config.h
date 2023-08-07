@@ -31,17 +31,11 @@
 
 //PA07 is attached to thermistor RT1
 
-//These are connected to the capacitors C13 & C43 next to the red/black wire serial connector
-//BLACK_DIFF_SIG_PIN PIN_PA14 
-//RED_DIFF_SIG_PIN PIN_PA15
-//No need to #define them as they are just used as part of SERCOM2 as the USART.
-
-//PA07 appears to go to the comparator 2nd pin down (IN-?) 
-//Thermistor RT2 is connected as TS2 via the BQ7693
-
 //Some packs have Molicell INR18650P26a - datasheet https://www.molicel.com/wp-content/uploads/INR18650P26A-V2-80087.pdf
 #define CELL_LOWEST_DISCHARGE_VOLTAGE 2500 //mV - wont allow pack to be used if any cells lower than this
 #define CELL_LOWEST_CHARGE_VOLTAGE 2000 //mV - won't try to charge the pack if any cells lower than this
 #define CELL_FULL_CHARGE_VOLTAGE 4200 //mV - fully charged cell voltage.
+
+#define MAX_PACK_TEMPERATURE 60 //'C - if pack temperature greater than this, charge and discharge will be disallowed.
  
 #endif /* CONFIG_H_ */
