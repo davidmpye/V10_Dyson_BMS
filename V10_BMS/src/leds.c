@@ -96,3 +96,12 @@ void leds_blink_error_led(int ms) {
 		port_pin_set_output_level(LED_ERR, false );
 		delay_ms(ms/2);
 }
+
+void leds_show_pack_flat() {
+	for (int i=0; i<5; ++i) {
+		port_pin_set_output_level(LED_BAT_LO, true );
+		delay_ms(100);
+		port_pin_set_output_level(LED_BAT_LO, false );
+		delay_ms(100);
+	}
+}

@@ -10,6 +10,9 @@
 //We start off idle.
 enum BMS_STATE bms_state = BMS_IDLE;
 
+//If a fault occurs, it'll be lodged here.
+enum BMS_ERROR_CODE bms_error = BMS_ERR_NONE;
+
 void pins_init() {
 	//Set up the output charge pin
 	struct port_config charge_pin_config;
@@ -27,11 +30,30 @@ void pins_init() {
 	port_pin_set_config(TRIGGER_PRESSED_PIN, &sense_pin_config);
 }
 
+	
+void bms_init() {
+	//sets up clocks/IRQ handlers etc.
+	system_init();
+	//Initialise the delay system
+	delay_init();
+	//Set up the pins
+	pins_init();
+	//BQ7693 init
+	bq7693_init();
+	//Init the LEDs
+	leds_init();
+	//Do pretty welcome sequence
+	leds_sequence();
+	//Initialise the USART we need to talk to the vacuum cleaner
+	serial_init();
+}
+	
 bool bms_is_safe_to_discharge() {
 	uint16_t *cell_voltages = bq7693_get_cell_voltages();
 	//Check any cells undervolt.
 	for (int i=0; i<7;++i) {
 		if (cell_voltages[i] < CELL_LOWEST_DISCHARGE_VOLTAGE) {
+			bms_error = BMS_ERR_PACK_DISCHARGED;
 			return false;
 		}
 	}
@@ -39,6 +61,7 @@ bool bms_is_safe_to_discharge() {
 	//Check pack temperature acceptable (<=60'C)	
 	int temp = bq7693_read_temperature();
 	if (temp/10  > MAX_PACK_TEMPERATURE) {
+		bms_error = BMS_ERR_PACK_OVERTEMP;
 		return false;
 	}
 	
@@ -51,6 +74,7 @@ bool bms_is_safe_to_charge() {
 	//Check no cells are so flat they cannot be charged.
 	for (int i=0; i<7;++i) {
 		if ( cell_voltages[i] < CELL_LOWEST_CHARGE_VOLTAGE ) {
+			bms_error = BMS_ERR_CELL_FAIL;		
 			return false;
 		}
 	}
@@ -58,6 +82,7 @@ bool bms_is_safe_to_charge() {
 	//Check pack temperature acceptable (<=60'C)	
 	int temp = bq7693_read_temperature();
 	if (temp/10  > MAX_PACK_TEMPERATURE) {
+		bms_error = BMS_ERR_PACK_OVERTEMP;
 		return false;
 	}
 	//Need to check the SYS_STAT status to check it's happy too..
@@ -77,24 +102,6 @@ bool bms_is_pack_full() {
 	return false;
 }
 
-volatile int pack_temp = 0;
-	
-void bms_init() {
-	//sets up clocks/IRQ handlers etc.
-	system_init();
-	//Initialise the delay system
-	delay_init();
-	//Set up the pins
-	pins_init();
-	//BQ7693 init
-	bq7693_init();
-	//Init the LEDs
-	leds_init();
-	//Do pretty welcome sequence
-	leds_sequence();
-	//Initialise the USART we need to talk to the vacuum cleaner
-	serial_init();		
-}
 
 void bms_handle_idle() {
 	//Three potential ways out of this state.
@@ -124,7 +131,7 @@ void bms_handle_trigger_pulled() {
 		bms_state = BMS_DISCHARGING;
 	}
 	else {
-		bms_state = BMS_DISCHARGE_FAULT;
+		bms_state = BMS_FAULT;
 	}
 }
 
@@ -161,7 +168,7 @@ void bms_handle_discharging() {
 			else if (!bms_is_safe_to_discharge()) {
 				//No longer safe to discharge - transit to fault state.
 				//Could be flat pack, overheat, overcurrent
-				bms_state = BMS_DISCHARGE_FAULT;
+				bms_state = BMS_FAULT;
 			}
 			return;
 		}
@@ -176,11 +183,18 @@ void bms_handle_discharging() {
 	}
 }
 
-void bms_handle_discharge_fault() {
-	for (int i=0; i<5; ++i) {
-		leds_blink_error_led(250);
+void bms_handle_fault() {
+	if (bms_error == BMS_ERR_PACK_DISCHARGED) {
+		//If the problem is just a flat pack, blink the lowest battery segment three times.
+		leds_show_pack_flat();
 	}
-	bms_state = BMS_IDLE;
+	else {
+		//Flash the red error led the number of times indicated by the fault code.
+		for (int i=0; i<bms_error; ++i) {
+			leds_blink_error_led(250);
+		}
+		bms_state = BMS_IDLE;
+	}
 }
 
 void bms_handle_charger_connected() {
@@ -192,7 +206,7 @@ void bms_handle_charger_connected() {
 		bms_state = BMS_CHARGING;
 	}
 	else {
-		bms_state = BMS_CHARGING_FAULT;
+		bms_state = BMS_FAULT;
 	}
 }
 
@@ -214,7 +228,7 @@ void bms_handle_charger_connected_not_charging() {
 void bms_handle_charging() {
 	//Sanity check...
 	if (!bms_is_safe_to_charge()) {
-		bms_state = BMS_CHARGING_FAULT;
+		bms_state = BMS_FAULT;
 		return;
 	}
 	//Enable charging.
@@ -235,7 +249,7 @@ void bms_handle_charging() {
 			bq7693_disable_charge();
 
 			leds_off();
-			bms_state = BMS_CHARGING_FAULT;
+			bms_state = BMS_FAULT;
 			return;
 		}
 				
@@ -345,8 +359,8 @@ void bms_mainloop() {
 			case BMS_DISCHARGING:
 				bms_handle_discharging();
 				break;
-			case BMS_DISCHARGE_FAULT:
-				bms_handle_discharge_fault();
+			case BMS_FAULT:
+				bms_handle_fault();
 				break;
 		}
 	}
