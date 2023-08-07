@@ -142,6 +142,10 @@ void bms_handle_sleep() {
 }
 
 void bms_handle_discharging() {		
+	
+	//Show the battery voltage on the LEDs.
+	leds_display_battery_voltage(bq7693_get_pack_voltage());
+	
 	if (bms_is_safe_to_discharge()) {
 		//Sanity check, hopefully already checked prior to here!
 		bq7693_enable_discharge();
