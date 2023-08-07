@@ -64,6 +64,10 @@ bool bms_is_safe_to_discharge() {
 		bms_error = BMS_ERR_PACK_OVERTEMP;
 		return false;
 	}
+	else if (temp/10 < MIN_PACK_DISCHARGE_TEMP) {
+		bms_error = BMS_ERR_PACK_UNDERTEMP;
+		return false;
+	}
 	//Ought to be checking SYS_STAT here.
 	
 	return true;
@@ -84,6 +88,10 @@ bool bms_is_safe_to_charge() {
 	int temp = bq7693_read_temperature();
 	if (temp/10  > MAX_PACK_TEMPERATURE) {
 		bms_error = BMS_ERR_PACK_OVERTEMP;
+		return false;
+	}
+	else if (temp/10 < MIN_PACK_CHARGE_TEMP) {
+		bms_error = BMS_ERR_PACK_UNDERTEMP;
 		return false;
 	}
 	//Ought to be checking SYS_STAT here.

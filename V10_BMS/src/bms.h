@@ -43,6 +43,7 @@ enum BMS_STATE {
 enum BMS_ERROR_CODE {
 	BMS_ERR_NONE,			//All good!
 	BMS_ERR_PACK_OVERTEMP,	//Pack thermistor reading exceeded MAX_PACK_TEMPERATURE - default 60'C
+	BMS_ERR_PACK_UNDERTEMP, //Pack is below -40 if attempting discharge, or -0 if attempting charge.
 	BMS_ERR_CELL_FAIL,		//A cell voltage is below safe minimum.
 	BMS_ERR_SHORTCIRCUIT,	//BMS detected short circuit
 	BMS_ERR_OVERCURRENT,	//BMS detected overcurrent fault
