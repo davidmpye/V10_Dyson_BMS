@@ -49,38 +49,57 @@ void bms_init() {
 }
 	
 bool bms_is_safe_to_discharge() {
+	//Clear error status.
+	bms_error = BMS_ERR_NONE;
+	
 	uint16_t *cell_voltages = bq7693_get_cell_voltages();
 	//Check any cells undervolt.
 	for (int i=0; i<7;++i) {
 		if (cell_voltages[i] < CELL_LOWEST_DISCHARGE_VOLTAGE) {
 			bms_error = BMS_ERR_PACK_DISCHARGED;
-			return false;
 		}
 	}
 	
-	//Check pack temperature acceptable (<=60'C)	
+	//Check pack temperature remains in acceptable range	
 	int temp = bq7693_read_temperature();
 	if (temp/10  > MAX_PACK_TEMPERATURE) {
 		bms_error = BMS_ERR_PACK_OVERTEMP;
-		return false;
 	}
 	else if (temp/10 < MIN_PACK_DISCHARGE_TEMP) {
 		bms_error = BMS_ERR_PACK_UNDERTEMP;
-		return false;
 	}
-	//Ought to be checking SYS_STAT here.
 	
-	return true;
+	//Check sys_stat	
+	uint8_t sys_stat;
+	bq7693_read_register(SYS_STAT, 1, &sys_stat);
+
+	if (sys_stat & 0x01) 	{
+		bms_error = BMS_ERR_OVERCURRENT;
+	}
+	else if (sys_stat & 0x02) {
+		bms_error = BMS_ERR_SHORTCIRCUIT;
+	}
+	else if (sys_stat & 0x04) {
+		bms_error = BMS_ERR_OVERVOLTAGE;
+	}
+	
+	if (bms_error == BMS_ERR_NONE) {
+		return true;
+	}
+	else return false;
+	
 }
 
 bool bms_is_safe_to_charge() {
+	//Clear error status.
+	bms_error = BMS_ERR_NONE;
+	
 	uint16_t *cell_voltages = bq7693_get_cell_voltages();
 	
 	//Check no cells are so flat they cannot be charged.
 	for (int i=0; i<7;++i) {
 		if ( cell_voltages[i] < CELL_LOWEST_CHARGE_VOLTAGE ) {
-			bms_error = BMS_ERR_CELL_FAIL;		
-			return false;
+			bms_error = BMS_ERR_CELL_FAIL;	
 		}
 	}
 
@@ -88,15 +107,28 @@ bool bms_is_safe_to_charge() {
 	int temp = bq7693_read_temperature();
 	if (temp/10  > MAX_PACK_TEMPERATURE) {
 		bms_error = BMS_ERR_PACK_OVERTEMP;
-		return false;
 	}
 	else if (temp/10 < MIN_PACK_CHARGE_TEMP) {
 		bms_error = BMS_ERR_PACK_UNDERTEMP;
-		return false;
 	}
-	//Ought to be checking SYS_STAT here.
 	
-	return true;
+	//Check sys_stat
+	uint8_t sys_stat;
+	bq7693_read_register(SYS_STAT, 1, &sys_stat);
+	if (sys_stat & 0x01) 	{
+		bms_error = BMS_ERR_OVERCURRENT;
+	}
+	else if (sys_stat & 0x02) {
+		bms_error = BMS_ERR_SHORTCIRCUIT;
+	}
+	else if (sys_stat & 0x04) {
+		bms_error = BMS_ERR_OVERVOLTAGE;
+	}
+	
+	if (bms_error == BMS_ERR_NONE) {
+		return true;
+	}
+	else return false;
 }
 
 bool bms_is_pack_full() {
@@ -194,19 +226,27 @@ void bms_handle_discharging() {
 }
 
 void bms_handle_fault() {
+	//Turn all the LEDs off.
 	leds_off();
-	if (bms_error == BMS_ERR_PACK_DISCHARGED) {
-		//If the problem is just a flat pack, blink the lowest battery segment three times.
-		leds_show_pack_flat();
-	}
-	else {
-		//Flash the red error led the number of times indicated by the fault code.
-		for (int i=0; i<bms_error; ++i) {
-			leds_blink_error_led(500);
+	
+	//Show the error status and continue to show it, until trigger released and charger unplugged.
+	do {
+		if (bms_error == BMS_ERR_PACK_DISCHARGED || bms_error == BMS_ERR_UNDERVOLTAGE) {
+			//If the problem is just a flat pack, blink the lowest battery segment three times.
+			leds_show_pack_flat();
 		}
-		delay_ms(2000);
-		bms_state = BMS_IDLE;
-	}
+		else {
+			//Flash the red error led the number of times indicated by the fault code.
+			for (int i=0; i<bms_error; ++i) {
+				leds_blink_error_led(500);
+			}
+			delay_ms(2000);
+		}
+	} 
+	while (port_pin_get_input_level(TRIGGER_PRESSED_PIN) || port_pin_get_input_level(CHARGER_CONNECTED_PIN));
+		
+	//Return to idle
+	bms_state = BMS_IDLE;	
 }
 
 void bms_handle_charger_connected() {
