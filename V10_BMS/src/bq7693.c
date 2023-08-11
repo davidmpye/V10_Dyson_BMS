@@ -170,6 +170,11 @@ uint8_t bq7693_calc_checksum(uint8_t inCrc, uint8_t inData) {
 }
 
 void bq7693_enable_charge() {
+	uint8_t scratch;
+	//Clear any bits in the SYS_STAT error register
+	bq7693_read_register(SYS_STAT, 1, &scratch);
+	bq7693_write_register(SYS_STAT, scratch); //Explicitly clear any set bits in the SYS_STAT register by writing them back.
+	//CHG_ON enables the charge FET.
 	bq7693_write_register(SYS_CTRL2, 0x41); //CC_EN, CHG_ON
 }
 
@@ -184,12 +189,14 @@ void bq7693_enable_discharge() {
 	bq7693_write_register(PROTECT1, 0x9F); 
 	bq7693_write_register(PROTECT2, 0x04);
 
-	bq7693_write_register(SYS_STAT, 0x80);  
+	uint8_t scratch;
+	bq7693_read_register(SYS_STAT, 1, &scratch);
+	bq7693_write_register(SYS_STAT, scratch); //Explicitly clear any set bits in the SYS_STAT register by writing them back.
 	
+	//DSG_ON turns the discharge FET on.
 	bq7693_write_register(SYS_CTRL2, 0x42);//CC_EN, DSG_ON
 	bq7693_write_register(PROTECT2, 0x04);
 	bq7693_write_register(PROTECT1, 0x82);
-	bq7693_write_register(SYS_STAT, 0x80);
 }
 
 void bq7693_disable_discharge() {
