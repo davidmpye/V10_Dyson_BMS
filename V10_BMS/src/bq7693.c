@@ -19,7 +19,7 @@ uint8_t bq7693_calc_checksum(uint8_t inCrc, uint8_t data);
 volatile uint16_t bq7693_cell_voltages[7];
 
 volatile int bq7693_adc_gain = 0;   // in uV/LSB
-volatile int bq7693_adc_offset = 0; //in mV
+volatile int8_t bq7693_adc_offset = 0; //in mV
 
 // maps for settings in chip protection registers
 
