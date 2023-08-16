@@ -68,20 +68,27 @@ void bq7693_init() {
 	//Read the ADC offset and gain values and store	
 	uint8_t scratch1, scratch2;
 	bq7693_read_register(ADCOFFSET, 1, &scratch1);  // convert from 2's complement
-	bq7693_adc_offset = (signed int)scratch1;
+	bq7693_adc_offset = (int8_t)scratch1;
 	bq7693_read_register(ADCGAIN1, 1, &scratch1);
 	bq7693_read_register(ADCGAIN2, 1, &scratch2);
 	bq7693_adc_gain = 365 + ((( scratch1 & 0x0C) << 1) | (( scratch2 & 0xE0) >> 5)); // uV/LSB
 	
 	bq7693_write_register(PROTECT1, 0x82);
 	bq7693_write_register(PROTECT2, 0x04);
+	
+	//This sets overvolt and undervolt delays to 1 second.  
 	bq7693_write_register(PROTECT3, 0x00);
 	
-	bq7693_write_register(OV_TRIP, 0xAF); //need to reinterpret these to values...
-	bq7693_write_register(UV_TRIP, 0xAF);
+	//Calculate OV and UV trip voltages.
+	scratch1 = (((((long)CELL_OVERVOLTAGE_TRIP - bq7693_adc_offset)*1000)/ bq7693_adc_gain) >> 4) & 0xFF;
+	bq7693_write_register(OV_TRIP, scratch1); 
 	
+	scratch1 = (((((long)CELL_UNDERVOLTAGE_TRIP - bq7693_adc_offset) * 1000) / bq7693_adc_gain) >> 4) & 0xFF;
+	bq7693_write_register(UV_TRIP, scratch1);
+			
 	bq7693_write_register(CELLBAL1, 0x00); //Disable cell balancing 1
 	bq7693_write_register(CELLBAL2, 0x00); //Disable cell balancing 2
+	
 	bq7693_write_register(CC_CFG, 0x19); //'magic' value as per datasheet.
 	bq7693_write_register(SYS_CTRL2, 0x40); //CC_EN - enable continuous operation of coulomb counter
 

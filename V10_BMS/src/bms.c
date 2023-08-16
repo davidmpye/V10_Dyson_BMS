@@ -75,14 +75,17 @@ bool bms_is_safe_to_discharge() {
 
 	if (sys_stat & 0x01) 	{
 		bms_error = BMS_ERR_OVERCURRENT;
+		bq7693_write_register(SYS_STAT, 0x01);
 	}
 	else if (sys_stat & 0x02) {
 		bms_error = BMS_ERR_SHORTCIRCUIT;
+		bq7693_write_register(SYS_STAT, 0x02);
 	}
-	else if (sys_stat & 0x04) {
-		bms_error = BMS_ERR_OVERVOLTAGE;
-	}
-	
+	else if (sys_stat & 0x08) {
+		bms_error = BMS_ERR_UNDERVOLTAGE;
+		bq7693_write_register(SYS_STAT, 0x08);
+	}	
+
 	if (bms_error == BMS_ERR_NONE) {
 		return true;
 	}
@@ -117,12 +120,11 @@ bool bms_is_safe_to_charge() {
 	bq7693_read_register(SYS_STAT, 1, &sys_stat);
 	if (sys_stat & 0x01) 	{
 		bms_error = BMS_ERR_OVERCURRENT;
-	}
-	else if (sys_stat & 0x02) {
-		bms_error = BMS_ERR_SHORTCIRCUIT;
+		bq7693_write_register(SYS_STAT, 0x01);
 	}
 	else if (sys_stat & 0x04) {
 		bms_error = BMS_ERR_OVERVOLTAGE;
+		bq7693_write_register(SYS_STAT, 0x04);
 	}
 	
 	if (bms_error == BMS_ERR_NONE) {
@@ -196,26 +198,22 @@ void bms_handle_discharging() {
 	}
 	
 	while (1) {
-		if (!port_pin_get_input_level(TRIGGER_PRESSED_PIN)   || !bms_is_safe_to_discharge()) {
-			//Either trigger released, or a fault has occurred.
-			//Shut off the power.
+		if (!port_pin_get_input_level(TRIGGER_PRESSED_PIN)) {
+			//Trigger released.
 			bq7693_disable_discharge();
 			//Clear the battery status etc.
 			leds_off();
-			
-			if (!port_pin_get_input_level(TRIGGER_PRESSED_PIN)) {
-				//Trigger let go, will return to IDLE state.
-				bms_state = BMS_IDLE;				
-			}
-			else if (!bms_is_safe_to_discharge()) {
-				//No longer safe to discharge - transit to fault state.
-				//Could be flat pack, overheat, overcurrent
-				bms_state = BMS_FAULT;
-			}
+			bms_state = BMS_IDLE;
 			return;
 		}
-		//No errors, and trigger pressed, so we continue to discharge.
+		if (!bms_is_safe_to_discharge()) {
+			//A fault has occurred.
+			bq7693_disable_discharge();
+			bms_state = BMS_FAULT;
+			return;
+		}
 		
+		//No errors, and trigger pressed, so we continue to discharge.
 		//Show the battery voltage on the LEDs.
 		leds_display_battery_voltage(bq7693_get_pack_voltage());
 		
@@ -231,7 +229,7 @@ void bms_handle_fault() {
 	
 	//Show the error status and continue to show it, until trigger released and charger unplugged.
 	do {
-		if (bms_error == BMS_ERR_PACK_DISCHARGED || bms_error == BMS_ERR_UNDERVOLTAGE) {
+		if (bms_error == BMS_ERR_PACK_DISCHARGED || bms_error == BMS_ERR_UNDERVOLTAGE ) {
 			//If the problem is just a flat pack, blink the lowest battery segment three times.
 			leds_show_pack_flat();
 		}

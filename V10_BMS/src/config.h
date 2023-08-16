@@ -32,9 +32,12 @@
 //PA07 is attached to thermistor RT1
 
 //Some packs have Molicell INR18650P26a - datasheet https://www.molicel.com/wp-content/uploads/INR18650P26A-V2-80087.pdf
-#define CELL_LOWEST_DISCHARGE_VOLTAGE 2500	//mV - wont allow pack to be used if any cells lower than this
+#define CELL_LOWEST_DISCHARGE_VOLTAGE 2500	//mV - wont allow pack to discharge if any cells lower than this
 #define CELL_LOWEST_CHARGE_VOLTAGE 2000		//mV - won't try to charge the pack if any cells lower than this
 #define CELL_FULL_CHARGE_VOLTAGE 4200		//mV - fully charged cell voltage.
+
+#define CELL_OVERVOLTAGE_TRIP  4250		//BMS will trip out at this voltage - NB DO NOT set outside of 3150mV - 4700mV or it wont' work! 
+#define CELL_UNDERVOLTAGE_TRIP 2450		//BMS will trip out at this voltage - NB DO NOT set outside of 1700mv - 3000mV or it wont' work!
 
 //18650 cell temperature limits from Molicell datasheet.
 #define MAX_PACK_TEMPERATURE 60				//'C - if pack temperature greater than this, no charge/discharge allowed.

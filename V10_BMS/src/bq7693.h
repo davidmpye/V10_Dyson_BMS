@@ -16,6 +16,7 @@
 #include <math.h>
 #include <inttypes.h>
 #include "asf.h"
+#include "config.h"
 
 //I2C address of the device
 #define BQ7693_ADDR 0x08
