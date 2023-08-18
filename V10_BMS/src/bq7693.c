@@ -236,7 +236,7 @@ int bq7693_read_temperature() {
 	return result;
 }
 
-volatile uint16_t *bq7693_get_cell_voltages() {
+uint16_t *bq7693_get_cell_voltages() {
 	volatile uint8_t scratch[3];
 	volatile uint16_t tempval;
 	//Voltages for each cell
@@ -252,7 +252,7 @@ volatile uint16_t *bq7693_get_cell_voltages() {
 	return bq7693_cell_voltages;
 }
 
-volatile int bq7693_get_pack_voltage() {
+int bq7693_get_pack_voltage() {
 	volatile uint8_t scratch[3];
 	volatile uint16_t tempval;
 	bq7693_read_register(BAT_HI_BYTE, 3, scratch);

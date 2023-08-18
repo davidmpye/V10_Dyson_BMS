@@ -23,6 +23,14 @@ void bms_mainloop(void);
 
 void bms_handle_idle(void);
 void bms_handle_sleep(void);
+void bms_handle_trigger_pulled(void);
+void bms_handle_discharging(void);
+void bms_handle_fault(void);
+void bms_handle_charger_connected(void);
+void bms_handle_charger_connected_not_charging(void);
+void bms_handle_charging(void);
+void bms_handle_charger_unplugged(void);
+
 
 bool bms_is_pack_full(void);
 bool bms_is_safe_to_discharge(void);

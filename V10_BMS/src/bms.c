@@ -323,8 +323,6 @@ void bms_handle_charging() {
 			for (int i=0; i<30; ++i) {
 				//This function takes a second.
 				leds_flash_charging_segment(bq7693_get_pack_voltage());
-				//Briefest red flicker.
-				leds_blink_error_led(50);
 				//Check the charger hasn't been unplugged while we're waiting
 				//If it has, abandon the charge process and return to main loop
 				if (!port_pin_get_input_level(CHARGER_CONNECTED_PIN)) {
