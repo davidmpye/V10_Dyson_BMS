@@ -2,6 +2,7 @@
 
 A written-from-scratch unofficial firmware for Dyson V10 Battery Management Systems
 
+Allows __YOU__ to take control of your pack - rebuild it, use it to power something else, and best of all, you can install the new firmware with just a Raspberry Pi - no need for expensive programmers!
 Have a read of the [Wiki](https://github.com/davidmpye/V10_Dyson_BMS/wiki) for the most up to date information about the state of the project.
 
 Lots more documentation needed. 
