@@ -19,7 +19,7 @@ Problems
 - doesn't use the coulomb charge counter to monitor pack charge, just displays guestimates based on cell voltage.
 - No cell balancing (same as stock), I doubt this can be fixed.
 
+![v10-closeup](https://github.com/davidmpye/V10_Dyson_BMS/assets/2261985/9c3c997c-1c46-4f77-aa3a-e4a8f9b940f4)
 
-![v10small](https://github.com/davidmpye/V10_Dyson_BMS/assets/2261985/1e88cf50-33de-437f-a9fb-07bd52d1e4b9)
 
 
