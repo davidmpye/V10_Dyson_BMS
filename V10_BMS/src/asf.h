@@ -65,6 +65,10 @@
 // From module: Delay routines
 #include <delay.h>
 
+// From module: EXTINT - External Interrupt (Callback APIs)
+#include <extint.h>
+#include <extint_callback.h>
+
 // From module: Generic board support
 #include <board.h>
 

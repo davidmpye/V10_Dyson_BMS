@@ -29,8 +29,39 @@ void pins_init() {
 	port_pin_set_config(CHARGER_CONNECTED_PIN, &sense_pin_config);
 	port_pin_set_config(TRIGGER_PRESSED_PIN, &sense_pin_config);
 }
-
 	
+void bms_interrupt_callback(void) {
+	//Example call back - this needs to be moved into bq7693 and not here.
+	/*
+		leds_blink_error_led(100);
+		uint8_t val;
+		bq7693_read_register(SYS_STAT, 1, &val);
+		if (val & 0x80) {
+			//Got a coulomb charger count ready.
+			bq7693_write_register(SYS_STAT, 0x80);//Clear CC bit.
+		}
+	*/
+}
+	
+void interrupts_init() {
+	//A single interrupt, focussed on the BQ7693's alert line (PA28), which
+	//is on EXTINT 8.
+	struct extint_chan_conf config_extint_chan;
+	extint_chan_get_config_defaults(&config_extint_chan);	
+	config_extint_chan.gpio_pin        = 	PIN_PA28A_EIC_EXTINT8;
+	config_extint_chan.gpio_pin_mux =       MUX_PA28A_EIC_EXTINT8;
+	//This line is designed to be possible for either device to pull it up or down to indicate a fault condition, so
+	//no pullups.
+	config_extint_chan.gpio_pin_pull      = EXTINT_PULL_NONE;
+	config_extint_chan.detection_criteria = EXTINT_DETECT_RISING;
+	
+	extint_chan_set_config(8, &config_extint_chan);
+	extint_register_callback(bms_interrupt_callback, 8, EXTINT_CALLBACK_TYPE_DETECT);
+	extint_chan_enable_callback(8, EXTINT_CALLBACK_TYPE_DETECT);
+	//Enable interrupts.	
+	system_interrupt_enable_global();
+}
+
 void bms_init() {
 	//sets up clocks/IRQ handlers etc.
 	system_init();
@@ -38,6 +69,8 @@ void bms_init() {
 	delay_init();
 	//Set up the pins
 	pins_init();
+	//Enable interrupts
+	interrupts_init();
 	//BQ7693 init
 	bq7693_init();
 	//Init the LEDs
