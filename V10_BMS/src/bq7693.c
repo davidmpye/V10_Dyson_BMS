@@ -99,6 +99,10 @@ void bq7693_init() {
 }
 
 bool bq7693_read_register(uint8_t addr, size_t len, uint8_t *buf) {
+	//Disable interrupts from the EIC - we don't want to end up trying to read the
+	//charge counter half way through an existing i2c op. Re-enable at the end.
+	system_interrupt_disable(4);
+	
 	uint16_t timeout = 0;
 	bool result = true;
 	
@@ -127,10 +131,16 @@ bool bq7693_read_register(uint8_t addr, size_t len, uint8_t *buf) {
 			break;
 		}
 	}
+	
+	system_interrupt_enable(4);
 	return result;
 }
 
 bool bq7693_write_register(uint8_t addr, uint8_t value) {
+	//Disable interrupts from the EIC - we don't want to end up trying to read the
+	//charge counter half way through an existing i2c op. Re-enable at the end.
+	system_interrupt_disable(4);
+	
 	uint16_t timeout = 0;
 	bool result = true;
 	
@@ -157,7 +167,8 @@ bool bq7693_write_register(uint8_t addr, uint8_t value) {
 			result = false;
 			break;
 		}
-	}
+	}	
+	system_interrupt_enable(4);
 	return result;
 }
 
