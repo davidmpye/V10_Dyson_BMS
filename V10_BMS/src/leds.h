@@ -1,8 +1,9 @@
 /*
  * leds.h
  *
- * Created: 06/07/2023 16:58:01
- *  Author: David Pye
+ *  Author:  David Pye
+ *  Contact: davidmpye@gmail.com
+ *  Licence: GNU GPL v3 or later
  */ 
 
 

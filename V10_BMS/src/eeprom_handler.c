@@ -1,9 +1,9 @@
 /*
- * eeprom.c
+ *  eeprom_handler.c
  *
- * Created: 28/08/2023 14:20:37
- *  Author: David Pye
- *  NB: Much of the EEPROM handling code comes from https://microchip.my.site.com/s/article/SAMD20-SAMD21-Programming-the-fuses-from-application-code
+ *  Author:  David Pye
+ *  Contact: davidmpye@gmail.com
+ *  Licence: GNU GPL v3 or later
  */ 
 
 #include "eeprom_handler.h"

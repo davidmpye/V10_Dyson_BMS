@@ -1,8 +1,9 @@
 /*
  * serial.c
  *
- * Created: 12/07/2023 18:03:21
- *  Author: David Pye
+ *  Author:  David Pye
+ *  Contact: davidmpye@gmail.com
+ *  Licence: GNU GPL v3 or later
  */ 
 
 #include "asf.h"

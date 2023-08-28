@@ -1,8 +1,9 @@
 /*
  * serial.h
  *
- * Created: 12/07/2023 18:02:35
- *  Author: David Pye
+ *  Author:  David Pye
+ *  Contact: davidmpye@gmail.com
+ *  Licence: GNU GPL v3 or later
  */ 
 
 void serial_init(void);

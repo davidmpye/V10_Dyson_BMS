@@ -1,8 +1,9 @@
 /*
  * config.h
  *
- * Created: 06/07/2023 15:43:48
- *  Author: David Pye
+ *  Author:  David Pye
+ *  Contact: davidmpye@gmail.com
+ *  Licence: GNU GPL v3 or later
  */ 
 
 #ifndef CONFIG_H_

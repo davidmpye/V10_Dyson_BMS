@@ -1,5 +1,5 @@
 /*
- * eeprom.h
+ * eeprom_handler.h
  *
  *  Author:  David Pye
  *  Contact: davidmpye@gmail.com

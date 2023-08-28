@@ -1,8 +1,8 @@
 /**
- * \file
- *
- * \brief  Main entry point
- *
+ * main.c - entry point
+ *  Author:  David Pye
+ *  Contact: davidmpye@gmail.com
+ *  Licence: GNU GPL v3 or later
  */
 
 #include "bms.h"
