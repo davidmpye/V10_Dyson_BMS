@@ -50,9 +50,11 @@ OUTPUT_ARCH(arm)
 SEARCH_DIR(.)
 
 /* Memory Spaces Definitions */
+/* Add in 1kB for EEPROM emulation (0x400 bytes) as per https://borkedlabs.com/blog/2018/02-03-sam-m0-eeprom-linker/ */
 MEMORY
 {
-  rom    (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00008000
+  rom    (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00007600
+  eep	 (rw)  : ORIGIN = 0x00007600, LENGTH = 0x00000400
   ram    (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00001000
 }
 
