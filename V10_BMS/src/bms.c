@@ -32,15 +32,16 @@ void pins_init() {
 	
 void bms_interrupt_callback(void) {
 	//Example call back - this needs to be moved into bq7693 and not here.
-	/*
-		leds_blink_error_led(100);
+	
+		leds_blink_error_led(20);
+		
 		uint8_t val;
 		bq7693_read_register(SYS_STAT, 1, &val);
 		if (val & 0x80) {
 			//Got a coulomb charger count ready.
 			bq7693_write_register(SYS_STAT, 0x80);//Clear CC bit.
 		}
-	*/
+	
 }
 	
 void interrupts_init() {

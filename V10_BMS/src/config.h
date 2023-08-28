@@ -44,5 +44,5 @@
 #define MIN_PACK_CHARGE_TEMP 0				//'C - if less than this, no charge.
 #define MIN_PACK_DISCHARGE_TEMP -40			//'C - if less than this, no discharge
 
-#define IDLE_TIME 60 //Idle time in seconds - pack will go into SHIP/deep sleep mode if nothing happens in this duration
+#define IDLE_TIME 60 * 15 // Idle time in seconds. Pack will go into SHIP/deep sleep mode if nothing happens in this duration
 #endif /* CONFIG_H_ */

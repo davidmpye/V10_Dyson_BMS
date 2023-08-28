@@ -8,6 +8,8 @@ src\ASF\sam0\drivers\extint\extint_sam_d_r_h\extint.c
 
 src\bms.c
 
+src\eeprom.c
+
 src\serial.c
 
 src\ASF\common2\services\delay\sam0\systick_counter.c

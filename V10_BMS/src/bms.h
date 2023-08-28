@@ -15,6 +15,7 @@
 #include "bq7693.h"
 #include "serial.h"
 #include "leds.h"
+#include "eeprom.h"
 
 void pins_init(void);
 
