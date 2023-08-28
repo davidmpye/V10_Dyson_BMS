@@ -20,9 +20,9 @@
 
 int eeprom_init(void);
 
-int eeprom_read(uint8_t buffer, size_t len);
-int eeprom_write(uint8_t buffer, size_t len);
+int eeprom_read(uint8_t *page);
+int eeprom_write(uint8_t *page);
 
-int eeprom_fuses_set();
+int eeprom_fuses_set(void);
 
 #endif /* EEPROM_H_ */

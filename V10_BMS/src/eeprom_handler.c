@@ -11,10 +11,11 @@
 int eeprom_init() {
 	enum status_code error_code = eeprom_emulator_init();
 	if (error_code == STATUS_ERR_NO_MEMORY) {
-		//Show a series of red flashes to make it clear what we are doing.
+		//We are here because the fuses are set to 0x07, meaning eeprom is not enabled.
+		//Show a few slow flashes to make it clear we're up to something, then reprogram fuses and reset 
+		//the mcu.
 		for (int i=0; i<4; ++i) {
-			leds_blink_error_led(500);
-			delay_ms(500);
+			leds_blink_error_led(2000);
 		}
 		//This will update the fuses then reset the MCU
 		eeprom_fuses_set();
@@ -29,12 +30,12 @@ int eeprom_init() {
 	return error_code;
 }
 
-int eeprom_read(uint8_t buffer, size_t len) {
+int eeprom_read(uint8_t *buffer) {
 	
 	return 0;
 }
 
-int eeprom_write(uint8_t buffer, size_t len) {
+int eeprom_write(uint8_t *buffer) {
 	
 	return 0;
 }

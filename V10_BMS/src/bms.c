@@ -33,16 +33,12 @@ void pins_init() {
 	
 void bms_interrupt_callback(void) {
 	//Example call back - this needs to be moved into bq7693 and not here.
-	
-		leds_blink_error_led(20);
-		
-		uint8_t val;
-		bq7693_read_register(SYS_STAT, 1, &val);
-		if (val & 0x80) {
-			//Got a coulomb charger count ready.
-			bq7693_write_register(SYS_STAT, 0x80);//Clear CC bit.
-		}
-	
+	uint8_t val;
+	bq7693_read_register(SYS_STAT, 1, &val);
+	if (val & 0x80) {
+		//Got a coulomb charger count ready.
+		bq7693_write_register(SYS_STAT, 0x80);//Clear CC bit.
+	}
 }
 	
 void interrupts_init() {
@@ -71,16 +67,18 @@ void bms_init() {
 	delay_init();
 	//Set up the pins
 	pins_init();
-	//Enable interrupts
-	interrupts_init();
-	//BQ7693 init
-	bq7693_init();
 	//Init the LEDs
 	leds_init();
+	//Init eeprom emulator
+	eeprom_init();
+	//BQ7693 init
+	bq7693_init();
+	//Initialise the USART we need to talk to the vacuum cleaner
+	serial_init();	
 	//Do pretty welcome sequence
 	leds_sequence();
-	//Initialise the USART we need to talk to the vacuum cleaner
-	serial_init();
+	//Enable interrupts
+	interrupts_init();
 }
 	
 bool bms_is_safe_to_discharge() {

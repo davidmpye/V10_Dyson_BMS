@@ -16,7 +16,7 @@
 #include "bq7693.h"
 #include "serial.h"
 #include "leds.h"
-#include "eeprom.h"
+#include "eeprom_handler.h"
 
 void pins_init(void);
 
