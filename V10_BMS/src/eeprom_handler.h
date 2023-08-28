@@ -14,10 +14,15 @@
 #include <inttypes.h>
 
 #include "eeprom.h"
+#include "nvm.h"
 
-void eeprom_init(void);
+#include "leds.h"
+
+int eeprom_init(void);
 
 int eeprom_read(uint8_t buffer, size_t len);
 int eeprom_write(uint8_t buffer, size_t len);
+
+int eeprom_fuses_set();
 
 #endif /* EEPROM_H_ */

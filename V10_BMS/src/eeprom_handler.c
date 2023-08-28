@@ -2,27 +2,31 @@
  * eeprom.c
  *
  * Created: 28/08/2023 14:20:37
- *  Author: david
+ *  Author: David Pye
+ *  NB: Much of the EEPROM handling code comes from https://microchip.my.site.com/s/article/SAMD20-SAMD21-Programming-the-fuses-from-application-code
  */ 
 
 #include "eeprom_handler.h"
 
-
-void eeprom_init() {
+int eeprom_init() {
 	enum status_code error_code = eeprom_emulator_init();
 	if (error_code == STATUS_ERR_NO_MEMORY) {
-		while (true) {
-			//Need to update the fuses and reset the device.
-			
+		//Show a series of red flashes to make it clear what we are doing.
+		for (int i=0; i<4; ++i) {
+			leds_blink_error_led(500);
+			delay_ms(500);
 		}
+		//This will update the fuses then reset the MCU
+		eeprom_fuses_set();
 	}
 	else if (error_code != STATUS_OK) {
 		//Init/format the eeprom
 		eeprom_emulator_erase_memory();
-		eeprom_emulator_init();
+		error_code = eeprom_emulator_init();
 		//Write an initial guestimate of what a pack capacity might look like.
-		
 	}
+	
+	return error_code;
 }
 
 int eeprom_read(uint8_t buffer, size_t len) {
@@ -33,4 +37,76 @@ int eeprom_read(uint8_t buffer, size_t len) {
 int eeprom_write(uint8_t buffer, size_t len) {
 	
 	return 0;
+}
+
+int eeprom_fuses_set() {
+	//Set the the NVM
+	struct nvm_config config_nvm;
+	nvm_get_config_defaults(&config_nvm);
+	nvm_set_config(&config_nvm);
+	
+	uint32_t temp;
+	uint32_t data[2];
+	
+	/* Wait for NVM command to complete */
+	while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY));
+	  
+	/* Read the fuse settings in the user row, 64 bit */
+	data[0] = *((uint32_t *)NVMCTRL_AUX0_ADDRESS);
+	data[1] = *(((uint32_t *)NVMCTRL_AUX0_ADDRESS) + 1);
+
+	//Configure the fuse bits to enable EEPROM 1024bytes - minimal size for the ASF eeprom library to use.
+	//Bits 4-6 specify eeprom size.
+	//Clear bits 4-6.
+	data[0] &= ~0x00000038;
+	//Eeprom to 1024 bytes / 4 rows (EEPROM bits 0x04)
+	data[0] |=  0x00000020;
+
+	//Writeback sequence from https://microchip.my.site.com/s/article/SAMD20-SAMD21-Programming-the-fuses-from-application-code
+	/* Disable Cache */
+	temp = NVMCTRL->CTRLB.reg;
+	NVMCTRL->CTRLB.reg = temp | NVMCTRL_CTRLB_CACHEDIS;
+	
+	/* Clear error flags */
+	NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;
+
+	/* Set address, command will be issued elsewhere */
+	NVMCTRL->ADDR.reg = NVMCTRL_AUX0_ADDRESS/2;
+	
+	/* Erase the user page */
+	NVMCTRL->CTRLA.reg = NVM_COMMAND_ERASE_AUX_ROW | NVMCTRL_CTRLA_CMDEX_KEY;
+	
+	/* Wait for NVM command to complete */
+	while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY));
+	
+	/* Clear error flags */
+	NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;
+	
+	/* Set address, command will be issued elsewhere */
+	NVMCTRL->ADDR.reg = NVMCTRL_AUX0_ADDRESS/2;
+	
+	/* Erase the page buffer before buffering new data */
+	NVMCTRL->CTRLA.reg = NVM_COMMAND_PAGE_BUFFER_CLEAR | NVMCTRL_CTRLA_CMDEX_KEY;
+
+	/* Wait for NVM command to complete */
+	while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY));
+	
+	/* Clear error flags */
+	NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;
+	
+	/* Set address, command will be issued elsewhere */
+	NVMCTRL->ADDR.reg = NVMCTRL_AUX0_ADDRESS/2;
+	
+	// Write back the updated fuse bits.
+	*((uint32_t *)NVMCTRL_AUX0_ADDRESS) = data[0];
+	*(((uint32_t *)NVMCTRL_AUX0_ADDRESS) + 1) = data[1];
+	
+	/* Write the user page */
+	NVMCTRL->CTRLA.reg = NVM_COMMAND_WRITE_AUX_ROW | NVMCTRL_CTRLA_CMDEX_KEY;
+	
+	/* Restore the settings */
+	NVMCTRL->CTRLB.reg = temp;
+	
+	//Reset the MCU
+	NVIC_SystemReset();
 }
