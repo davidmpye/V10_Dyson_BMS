@@ -65,6 +65,9 @@
 // From module: Delay routines
 #include <delay.h>
 
+// From module: EEPROM Emulator Service
+#include <eeprom.h>
+
 // From module: EXTINT - External Interrupt (Callback APIs)
 #include <extint.h>
 #include <extint_callback.h>
@@ -77,6 +80,9 @@
 
 // From module: Interrupt management - SAM implementation
 #include <interrupt.h>
+
+// From module: NVM - Non-Volatile Memory
+#include <nvm.h>
 
 // From module: PORT - GPIO Pin Control
 #include <port.h>
