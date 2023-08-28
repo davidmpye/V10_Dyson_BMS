@@ -9,6 +9,7 @@ Their project is [here](https://github.com/LibreSolar/bq769x0-arduino-library/)
 *Jeremy Bentham, who wrote a really helpful [blog post](https://iosoft.blog/2019/01/28/raspberry-pi-openocd/) with information about how to use the Raspberry Pi to as a programmer with OpenOCD
 
 * Residents of the #openocd IRC channel, who provided help and guidance about how to patch OpenOCD to get SAMD20 security bit unlock functionality working.
+* Borkedlabs blog with info about ASF EEPROM emulation - https://borkedlabs.com/blog/2014/06-24-asf-samd20samd21-eeprom-emulation/
 
 Many thanks!
 
