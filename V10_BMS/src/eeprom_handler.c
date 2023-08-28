@@ -58,9 +58,9 @@ int eeprom_fuses_set() {
 	//Configure the fuse bits to enable EEPROM 1024bytes - minimal size for the ASF eeprom library to use.
 	//Bits 4-6 specify eeprom size.
 	//Clear bits 4-6.
-	data[0] &= ~0x00000038;
+	data[0] &= ~0x00000070;
 	//Eeprom to 1024 bytes / 4 rows (EEPROM bits 0x04)
-	data[0] |=  0x00000020;
+	data[0] |=  0x00000040;
 
 	//Writeback sequence from https://microchip.my.site.com/s/article/SAMD20-SAMD21-Programming-the-fuses-from-application-code
 	/* Disable Cache */
