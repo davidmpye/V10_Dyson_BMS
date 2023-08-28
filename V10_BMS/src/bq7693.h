@@ -1,10 +1,9 @@
 /*
  * bq7693.h
  *
- * Created: 06/07/2023 15:43:31
- * Authors: https://github.com/LibreSolar/bq769x0-arduino-library <- from this github source (LGPL)
- * Modified/ported from C++ back to C by David Pye
- * Combined work licenced under the GNU GPL
+ *  Authors: https://github.com/LibreSolar/bq769x0-arduino-library <- from this github source (LGPL)
+ *  Modified/ported from C++ back to C by David Pye
+ *  Combined work licenced under the GNU GPL
  *  
  */ 
 

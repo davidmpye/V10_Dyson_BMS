@@ -1,9 +1,9 @@
 /*
  * bq7693.c
  *
- * Created: 06/07/2023 15:42:22
- * Author: David Pye
- * Licence: GNU GPL v3 or later
+ *  Author:  David Pye
+ *  Contact: davidmpye@gmail.com
+ *  Licence: GNU GPL v3 or later
  */ 
 
 

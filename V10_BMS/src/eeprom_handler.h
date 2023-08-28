@@ -1,9 +1,9 @@
 /*
  * eeprom.h
  *
- * Created: 28/08/2023 14:20:53
- *  Author: David Pye
- *  davidmpye@gmail.com
+ *  Author:  David Pye
+ *  Contact: davidmpye@gmail.com
+ *  Licence: GNU GPL v3 or later
  */ 
 
 

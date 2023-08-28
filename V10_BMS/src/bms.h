@@ -1,8 +1,9 @@
 /*
  * bms.h
  *
- * Created: 16/07/2023 20:00:06
- *  Author: David Pye
+ *  Author:  David Pye
+ *  Contact: davidmpye@gmail.com
+ *  Licence: GNU GPL v3 or later
  */ 
 
 

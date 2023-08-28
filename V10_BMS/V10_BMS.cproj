@@ -746,9 +746,6 @@
     <None Include="src\ASF\sam0\drivers\sercom\usart\usart.h">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="src\board.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\bq7693.c">
       <SubType>compile</SubType>
     </Compile>
