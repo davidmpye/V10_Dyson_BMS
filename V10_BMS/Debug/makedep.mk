@@ -6,9 +6,13 @@ src\ASF\sam0\drivers\extint\extint_callback.c
 
 src\ASF\sam0\drivers\extint\extint_sam_d_r_h\extint.c
 
+src\ASF\sam0\drivers\nvm\nvm.c
+
+src\ASF\sam0\services\eeprom\emulator\main_array\eeprom.c
+
 src\bms.c
 
-src\eeprom.c
+src\eeprom_handler.c
 
 src\serial.c
 
