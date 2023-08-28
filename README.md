@@ -2,7 +2,7 @@
 
 A written-from-scratch unofficial firmware for Dyson V10 Battery Management Systems
 
-Allows __YOU__ to take control of your pack - rebuild it, use it to power something else, and best of all, __you can install the new firmware with just a Raspberry Pi__ - no need for expensive programmers!
+Allows __YOU__ to take control of your pack - rebuild it, use it to power something else, and best of all, __you can install the new firmware with just a Raspberry Pi (but not Pi4 yet)__ - no need for expensive programmers!
 
 
 Have a read of the [Wiki](https://github.com/davidmpye/V10_Dyson_BMS/wiki) for more information!
@@ -12,7 +12,7 @@ TL:DR update of current position:
 What works:
 
 - can charge pack, can drive vacuum cleaner, including the USART comms to keep the cleaner working
-- Probably a fair number of odd glitches though
+- error reporting if faults occur
 
 Problems
 - doesn't use the rest of the status LEDs to reflect cleaner problems eg Blocked/Filter statuses
