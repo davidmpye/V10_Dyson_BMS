@@ -46,4 +46,7 @@
 #define MIN_PACK_DISCHARGE_TEMP -40			//'C - if less than this, no discharge
 
 #define IDLE_TIME 60 * 15 // Idle time in seconds. Pack will go into SHIP/deep sleep mode if nothing happens in this duration
+
+#define SERIAL_DEBUG 1
+
 #endif /* CONFIG_H_ */

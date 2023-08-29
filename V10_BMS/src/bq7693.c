@@ -278,20 +278,14 @@ void bq7693_enter_sleep_mode() {
 	bq7693_write_register(SYS_CTRL1, 0x02);
 }
 
-//charge counter notes 
-/*
-
-uint8_t reg;
-float batCurrent;
-if (reg &  0x80 ) {
-	uint16_t adcVal;
-	bq7693_read_register(0x32, 1, &reg);
-	adcVal  = (reg)<<8;
-	bq7693_read_register(0x33, 1, &reg);
-	adcVal |= reg;
-	batCurrent = adcVal * 8.44;
+int16_t bq7693_read_cc() {
+	int16_t tempCC;
 	
+	uint8_t scratch[3];
+	bq7693_read_register(CC_HI_BYTE, 3, scratch);
+	tempCC =  ((scratch[0])<<8);
+	tempCC |= scratch[2]; //ignore the unwanted CRC byte.
+	
+	return tempCC;
 }
-else batCurrent = 0;
-}
-*/
+

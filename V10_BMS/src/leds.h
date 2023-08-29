@@ -15,7 +15,7 @@
 
 void leds_init(void);
 void leds_sequence(void);
-void leds_display_battery_voltage(int);
+void leds_display_battery_soc(int);
 void leds_flash_charging_segment(int);
 void leds_blink_error_led(int);
 void leds_show_pack_flat(void);

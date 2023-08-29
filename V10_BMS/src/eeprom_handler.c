@@ -24,19 +24,28 @@ int eeprom_init() {
 		//Init/format the eeprom
 		eeprom_emulator_erase_memory();
 		error_code = eeprom_emulator_init();
-		//Write an initial guestimate of what a pack capacity might look like.
+		//Write an initial guestimate of what a pack capacity might look like, we'll fine tune this by charging and discharging.
+		eeprom_data.total_pack_capacity = 2000000;  //in microAmpHours - equiv of 2000mAh.
+		eeprom_data.current_charge_level = 1000000; //half charged.
+		eeprom_write();
+		eeprom_emulator_commit_page_buffer();
 	}
 	
 	return error_code;
 }
 
-int eeprom_read(uint8_t *buffer) {
-	
+int eeprom_read() {
+	volatile uint8_t buffer[EEPROM_PAGE_SIZE];
+	eeprom_emulator_read_page(0, buffer);
+	memcpy(&eeprom_data, buffer, sizeof(eeprom_data));
 	return 0;
 }
 
-int eeprom_write(uint8_t *buffer) {
-	
+int eeprom_write() {
+	uint8_t buffer[EEPROM_PAGE_SIZE];
+	memcpy(buffer, &eeprom_data, sizeof(eeprom_data));
+	eeprom_emulator_write_page(0, buffer);	
+	eeprom_emulator_commit_page_buffer();
 	return 0;
 }
 

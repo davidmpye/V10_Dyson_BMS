@@ -11,12 +11,14 @@
 #define BMS_H_
 
 #include "asf.h"
-
 #include "board.h"
+
 #include "bq7693.h"
 #include "serial.h"
 #include "leds.h"
 #include "eeprom_handler.h"
+#include "serial_debug.h"
+#include "config.h"
 
 void pins_init(void);
 
@@ -62,6 +64,7 @@ enum BMS_ERROR_CODE {
 	BMS_ERR_PACK_DISCHARGED,//Pack is flat - not really a bad error....
 	BMS_ERR_UNDERVOLTAGE,	//BMS detected undervoltage state - flat pack, but detected by the BQ.
 };
+
 
 
 #endif /* BMS_H_ */

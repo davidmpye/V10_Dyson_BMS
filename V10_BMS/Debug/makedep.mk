@@ -2,6 +2,8 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
+src\serial_debug.c
+
 src\ASF\sam0\drivers\extint\extint_callback.c
 
 src\ASF\sam0\drivers\extint\extint_sam_d_r_h\extint.c

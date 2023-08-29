@@ -38,6 +38,8 @@ void bq7693_disable_discharge(void);
 void bq7693_enter_sleep_mode(void);
 int bq7693_read_temperature(void);
 
+int16_t bq7693_read_cc(void);
+
 // register map
 #define SYS_STAT        0x00
 #define CELLBAL1        0x01

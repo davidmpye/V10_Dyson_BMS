@@ -46,7 +46,7 @@ void leds_on() {
 	}
 }
 
-void leds_display_battery_voltage(int voltage) {
+void leds_display_battery_soc(int percent_soc) {
 	//LEDs off to start
 	port_pin_set_output_level(LED_BAT_LO, false );
 	port_pin_set_output_level(LED_BAT_MED, false );
@@ -55,26 +55,26 @@ void leds_display_battery_voltage(int voltage) {
 	//Three LEDs to indicate SoC, so 0-35, 35-70, 70-100.
 	//Voltage thresholds:   
 	port_pin_set_output_level(LED_BAT_LO, true );
-	if (voltage>27650) {
+	if (percent_soc > 35) {
 		port_pin_set_output_level(LED_BAT_MED, true );
 	}
-	if (voltage > 28500) {
+	if (percent_soc>70) {
 		port_pin_set_output_level(LED_BAT_HI, true );
 	}
 }
 
-void leds_flash_charging_segment(int voltage) {
-	if (voltage<27650) {	
+void leds_flash_charging_segment(int percent_soc) {
+	if (percent_soc <35) {	
 		//Flash lo
 		port_pin_set_output_level(LED_BAT_LO, true );
 		delay_ms(500);
 		port_pin_set_output_level(LED_BAT_LO, false );
 		delay_ms(500);
 	}
-	else if (voltage>27650 && voltage < 28500) {
+	else if (percent_soc<70) {
 		//Low on, flash med
 		port_pin_set_output_level(LED_BAT_LO, true );
-	
+
 		port_pin_set_output_level(LED_BAT_MED, true );
 		delay_ms(500);
 		port_pin_set_output_level(LED_BAT_MED, false );
