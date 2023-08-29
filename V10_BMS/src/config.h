@@ -47,6 +47,8 @@
 
 #define IDLE_TIME 60 * 15 // Idle time in seconds. Pack will go into SHIP/deep sleep mode if nothing happens in this duration
 
+#define FULL_CHARGE_PAUSE_COUNT 10 //Once a cell reaches max charge volts, pause for 30 seconds and retry, this many times.
+
 #define SERIAL_DEBUG 1
 
 #endif /* CONFIG_H_ */

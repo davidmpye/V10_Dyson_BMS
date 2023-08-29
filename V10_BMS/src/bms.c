@@ -343,19 +343,14 @@ void bms_handle_discharging() {
 		//Reset the UART message counter;
 		serial_reset_message_counter();
 		//Brief pause to allow vac to wake up before we start sending serial data at it.
-		delay_ms(260);
 	}
 	
 	while (1) {
-
-#ifdef SERIAL_DEBUG	
-		char message[40];
-		sprintf(message,"Discharging at %d mA \r\n", currentmA);
-		serial_debug_send_message(message);
-		sprintf(message, "Capacity %d\r\n", eeprom_data.total_pack_capacity);
-		serial_debug_send_message(message);
-		sprintf(message, "Level %d\r\n", eeprom_data.current_charge_level);
-		serial_debug_send_message(message);
+		
+#ifdef SERIAL_DEBUG
+		sprintf(debug_msg_buffer,"Discharging at %d mA, %d mAH, capacity %d mAH, Temp %d'C\r\n", currentmA*-1, eeprom_data.current_charge_level/1000, eeprom_data.total_pack_capacity/1000,
+		bq7693_read_temperature()/10);
+		serial_debug_send_message(debug_msg_buffer);
 #endif
 		if (!port_pin_get_input_level(TRIGGER_PRESSED_PIN)) {
 			//Trigger released.
@@ -458,12 +453,9 @@ void bms_handle_charging() {
 		leds_flash_charging_segment((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
 	
 #ifdef SERIAL_DEBUG
-		sprintf(debug_msg_buffer,"Charging at %d mA \r\n", currentmA);
-		serial_debug_send_message(debug_msg_buffer);
-		sprintf(debug_msg_buffer, "Pack charge %d microAH : cap %d microAH\r\n",	eeprom_data.current_charge_level, eeprom_data.total_pack_capacity);
-		serial_debug_send_message(debug_msg_buffer);
-		sprintf(debug_msg_buffer, "Pack temp %d 'C\r\n", bq7693_read_temperature()/10);
-		serial_debug_send_message(debug_msg_buffer);		
+		sprintf(debug_msg_buffer,"Charging at %d mA, %d mAH, capacity %d mAH, Temp %d'C\r\n", currentmA, eeprom_data.current_charge_level/1000, eeprom_data.total_pack_capacity/1000, 
+		bq7693_read_temperature()/10);
+		serial_debug_send_message(debug_msg_buffer);	
 #endif
 		if (!bms_is_safe_to_charge()) {
 			//Safety error.
@@ -487,15 +479,17 @@ void bms_handle_charging() {
 		}
 				
 		if (bms_is_pack_full()) {
+#ifdef SERIAL_DEBUG
+			sprintf(debug_msg_buffer, "Charging paused - cell full, attempt %d of %d\r\n", charge_pause_counter, FULL_CHARGE_PAUSE_COUNT);
+			serial_debug_send_message(debug_msg_buffer);			
+			serial_debug_send_cell_voltages();
+#endif
 			//Pause the charging.
 			port_pin_set_output_level(ENABLE_CHARGE_PIN, false);
 			bq7693_disable_charge();
 		
 			//Delay for 30 seconds, then go and try again.	
 			for (int i=0; i<30; ++i) {
-#ifdef SERIAL_DEBUG
-			serial_debug_send_message("Charging paused because a cell hit capacity\r\n");
-#endif
 				//This function takes a second.
 				leds_flash_charging_segment((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
 				//Check the charger hasn't been unplugged while we're waiting
@@ -513,8 +507,8 @@ void bms_handle_charging() {
 			bq7693_enable_charge();
 		}
 		
-		if (charge_pause_counter == 10) {
-			//After 10 pauses, we are full.
+		if (charge_pause_counter == FULL_CHARGE_PAUSE_COUNT) {
+			//After FULL_CHARGE_PAUSE_COUNT pauses, we are full.
 			//Disable the charging
 			port_pin_set_output_level(ENABLE_CHARGE_PIN, false);
 			bq7693_disable_charge();
@@ -529,7 +523,7 @@ void bms_handle_charging() {
 #ifdef SERIAL_DEBUG
 			serial_debug_send_message("Charging stopped - cells at capacity\r\n");
 			char message[40];
-			sprintf(message, "Total pack capacity %d\r\n", eeprom_data.total_pack_capacity);
+			sprintf(message, "Total pack capacity %dmAh\r\n", eeprom_data.total_pack_capacity/1000);
 			serial_debug_send_message(message);
 #endif
 			return;	
