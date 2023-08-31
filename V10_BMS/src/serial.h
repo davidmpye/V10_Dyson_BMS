@@ -6,6 +6,8 @@
  *  Licence: GNU GPL v3 or later
  */ 
 
+#include "serial_debug.h"
+
 void serial_init(void);
 
 size_t serial_get_next_block(uint8_t **);

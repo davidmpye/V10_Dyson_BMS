@@ -2,6 +2,10 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
+src\ASF\sam0\drivers\sercom\sercom_interrupt.c
+
+src\ASF\sam0\drivers\sercom\usart\usart_interrupt.c
+
 src\serial_debug.c
 
 src\ASF\sam0\drivers\extint\extint_callback.c
