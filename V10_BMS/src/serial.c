@@ -96,7 +96,9 @@ void usart_read_callback(struct usart_module *const usart_module) {
 			//We want 20 byte messages as they contain the error flags.
 			if (serial_read_buffer[startFrame + MSG_NUM_OFFSET] == 0x06 || serial_read_buffer[startFrame + MSG_NUM_OFFSET] == 0x03) {
 				if (serial_read_buffer[startFrame+ MSG_ERR_CODE_OFFSET] == 0x01) {
+#ifdef SERIAL_DEBUG
 					serial_debug_send_message("USART message: Error from vacuum: FILTER\r\n");	
+#endif
 					leds_show_filter_err_status(true);
 				}
 				else {
@@ -105,7 +107,9 @@ void usart_read_callback(struct usart_module *const usart_module) {
 			}
 			else if (serial_read_buffer[startFrame + MSG_NUM_OFFSET] == 0x04 ||serial_read_buffer[startFrame + MSG_NUM_OFFSET] == 0x07) {
 				if (serial_read_buffer[startFrame+ MSG_ERR_CODE_OFFSET] == 0x01) {
+#ifdef SERIAL_DEBUG
 					serial_debug_send_message("USART message: Error from vacuum: BLOCKED\r\n");
+#endif
 					leds_show_blocked_err_status(true);
 				}
 				else {
