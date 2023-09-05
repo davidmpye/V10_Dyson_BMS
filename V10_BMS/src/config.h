@@ -49,6 +49,6 @@
 
 #define FULL_CHARGE_PAUSE_COUNT 10 //Once a cell reaches max charge volts, pause for 30 seconds and retry, this many times.
 
-#define SERIAL_DEBUG 1
+//#define SERIAL_DEBUG 1 //Serial debug via the spare USART on the programming pins header
 
 #endif /* CONFIG_H_ */

@@ -118,7 +118,6 @@ void usart_read_callback(struct usart_module *const usart_module) {
 			}			
 		}	
 	}
-	
 	//Queue up next read.*/	usart_read_buffer_job(&usart_instance, (uint8_t *)serial_read_buffer, 40);}
 
 void serial_init() {	
