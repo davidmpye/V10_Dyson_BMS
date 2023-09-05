@@ -69,11 +69,53 @@ static inline void pin_set_peripheral_function(uint32_t pinmux) {
 	0x0000FFFF) << (4 * ((pinmux >> 16) & 0x01u)));
 }
 
-uint8_t serial_read_buffer[10];
+//Data is read into here via a callback triggered by usart_read_buffer_job
+uint8_t serial_read_buffer[40];
 void usart_read_callback(struct usart_module *const usart_module) {
-	sprintf(debug_msg_buffer, "Serial: %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:", 
-		serial_read_buffer[0],serial_read_buffer[1],serial_read_buffer[2],serial_read_buffer[3],serial_read_buffer[4],
-		serial_read_buffer[5],serial_read_buffer[6],serial_read_buffer[7],serial_read_buffer[8],serial_read_buffer[9]);	serial_debug_send_message(debug_msg_buffer);	//Queue up next read.	usart_read_buffer_job(&usart_instance, (uint8_t *)serial_read_buffer, 10);}
+	//Parse the data in the buffer, and see if we have a whole message.
+	//This way of doing things is nasty, as messages do get truncated and lost, but enough get through to handle the error info...	
+	int startFrame=-1, endFrame=-1;
+	for (int i = 0; i < 40; ++i) {
+		if (serial_read_buffer[i] == SERIAL_MSG_DELIM_CHAR) {
+			if (serial_read_buffer[i+1] == SERIAL_MSG_DELIM_CHAR) continue; //Garbled message - across a buffer.
+			//This should be the start of a message.
+			if (startFrame == -1) {
+				startFrame = i;
+			}
+			else {
+				endFrame = i;
+				break;
+			}
+		}
+	}
+	
+	if (startFrame != -1 && endFrame != -1) {
+		//Got a valid message.
+		//We want only 21 byte messages as those are the only ones we understand......
+		if (endFrame - startFrame == 21) {
+			//We want 20 byte messages as they contain the error flags.
+			if (serial_read_buffer[startFrame + MSG_NUM_OFFSET] == 0x06 || serial_read_buffer[startFrame + MSG_NUM_OFFSET] == 0x03) {
+				if (serial_read_buffer[startFrame+ MSG_ERR_CODE_OFFSET] == 0x01) {
+					serial_debug_send_message("USART message: Error from vacuum: FILTER\r\n");	
+					leds_show_filter_err_status(true);
+				}
+				else {
+					leds_show_filter_err_status(false);
+				}				
+			}
+			else if (serial_read_buffer[startFrame + MSG_NUM_OFFSET] == 0x04 ||serial_read_buffer[startFrame + MSG_NUM_OFFSET] == 0x07) {
+				if (serial_read_buffer[startFrame+ MSG_ERR_CODE_OFFSET] == 0x01) {
+					serial_debug_send_message("USART message: Error from vacuum: BLOCKED\r\n");
+					leds_show_blocked_err_status(true);
+				}
+				else {
+					leds_show_blocked_err_status(false);
+				}
+			}			
+		}	
+	}
+	
+	//Queue up next read.*/	usart_read_buffer_job(&usart_instance, (uint8_t *)serial_read_buffer, 40);}
 
 void serial_init() {	
 	//Set up the pinmux settings for SERCOM2
@@ -100,7 +142,7 @@ void serial_init() {
 	usart_enable_callback(&usart_instance, USART_CALLBACK_BUFFER_RECEIVED);
 	
 	usart_enable(&usart_instance);
-	//Start read job - the next one is kicked off by the above callback	usart_read_buffer_job(&usart_instance, (uint8_t *)serial_read_buffer, 10);}
+	//Start read job - the next one is kicked off by the above callback	usart_read_buffer_job(&usart_instance, (uint8_t *)serial_read_buffer, 40);}
 
 void serial_send_next_message(){	
 	uint8_t *data;

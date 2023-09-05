@@ -20,6 +20,10 @@ void leds_flash_charging_segment(int);
 void leds_blink_error_led(int);
 void leds_show_pack_flat(void);
 
+
+void leds_show_filter_err_status(bool);
+void leds_show_blocked_err_status(bool);
+
 void leds_off(void);
 void leds_on(void);
 

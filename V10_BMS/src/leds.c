@@ -106,3 +106,11 @@ void leds_show_pack_flat() {
 		delay_ms(100);
 	}
 }
+
+void leds_show_filter_err_status(bool status) {
+	port_pin_set_output_level(LED_FILTER, status );
+}
+
+void leds_show_blocked_err_status(bool status) {
+	port_pin_set_output_level(LED_BLOCKED, status);	
+}
