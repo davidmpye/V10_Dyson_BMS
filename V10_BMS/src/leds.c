@@ -8,7 +8,7 @@
 #include "leds.h"
 
 //speed of LED sequence
-#define LED_SEQ_TIME 50
+#define LED_SEQ_TIME 10
 
 #define NUM_LEDS 6
 uint16_t leds[] = { LED_FILTER, LED_BLOCKED, LED_ERR, LED_BAT_LO, LED_BAT_MED, LED_BAT_HI };
