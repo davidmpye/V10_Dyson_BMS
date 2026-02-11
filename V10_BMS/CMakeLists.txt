@@ -176,30 +176,3 @@ add_custom_target(flash
     COMMENT "Flashing $<TARGET_FILE:${PROJECT_NAME}.elf> using OpenOCD"
 )
 
-# -----------------------------------------------------------------------------
-# GDB debug target with OpenOCD
-# -----------------------------------------------------------------------------
-set(GDB_SCRIPT ${CMAKE_SOURCE_DIR}/gdb_samd20.cfg)
-set(OPENOCD_CFG ${CMAKE_SOURCE_DIR}/openocd_samd20.cfg)
-
-# find_program(GDB_EXECUTABLE gdb)
-set(GDB_EXECUTABLE /opt/zephyr-sdk-0.15.2/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb)
-if(NOT GDB_EXECUTABLE)
-    message(FATAL_ERROR "GDB not found in PATH")
-endif()
-
-find_program(OPENOCD_EXECUTABLE openocd)
-if(NOT OPENOCD_EXECUTABLE)
-    message(FATAL_ERROR "OpenOCD not found in PATH")
-endif()
-
-add_custom_target(debug
-    DEPENDS ${PROJECT_NAME}.elf
-    USES_TERMINAL
-    COMMENT "Starting OpenOCD and launching GDB..."
-    # COMMAND ${CMAKE_COMMAND} -E echo "Starting OpenOCD in background..."
-    # COMMAND ${OPENOCD_EXECUTABLE} -f ${OPENOCD_CFG} &
-    COMMAND ${CMAKE_COMMAND} -E sleep 1
-    COMMAND ${GDB_EXECUTABLE} $<TARGET_FILE:${PROJECT_NAME}.elf> -x ${GDB_SCRIPT}
-    # COMMAND killall openocd
-)
