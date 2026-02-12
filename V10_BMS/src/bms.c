@@ -28,6 +28,8 @@ char *bms_state_names[] = {
 };
 #endif
 
+extern volatile struct eeprom_data eeprom_data;
+
 void pins_init() {
 	//Set up the output charge pin
 	struct port_config charge_pin_config;

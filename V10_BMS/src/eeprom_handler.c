@@ -8,6 +8,8 @@
 
 #include "eeprom_handler.h"
 
+volatile struct eeprom_data eeprom_data;
+
 int eeprom_init() {
 	enum status_code error_code = eeprom_emulator_init();
 	if (error_code == STATUS_ERR_NO_MEMORY) {
