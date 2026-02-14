@@ -13,7 +13,7 @@
 //Implemented: 10
 //In progress: 11
 
-#define DYSON_VERSION 10
+#define DYSON_VERSION 11
 
 // LED pin definitions
 #if DYSON_VERSION == 10
