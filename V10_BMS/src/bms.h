@@ -21,7 +21,7 @@
 
 #if DYSON_VERSION == 10 
 #include "serial.h"
-#elif DYSON_VERSION == 1
+#elif DYSON_VERSION == 11
 #include "serial_v11.h"
 #endif
 

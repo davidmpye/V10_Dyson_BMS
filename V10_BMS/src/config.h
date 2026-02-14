@@ -13,12 +13,7 @@
 //Implemented: 10
 //In progress: 11
 
-#define DYSON_VERSION 10
-
-#if DYSON_VERSION == 11 
-    #error Not implemented
-#endif
-
+#define DYSON_VERSION 11
 
 // Pin definitions
 #define LED_FILTER PIN_PA01

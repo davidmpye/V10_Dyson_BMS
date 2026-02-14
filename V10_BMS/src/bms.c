@@ -342,9 +342,10 @@ void bms_handle_discharging() {
 	if (bms_is_safe_to_discharge()) {
 		//Sanity check, hopefully already checked prior to here!
 		bq7693_enable_discharge();
+#if DYSON_VER == 11
 		//Reset the UART message counter;
 		serial_reset_message_counter();
-		//Brief pause to allow vac to wake up before we start sending serial data at it.
+#endif
 	}
 	
 	while (1) {
@@ -373,9 +374,11 @@ void bms_handle_discharging() {
 		//Show the battery voltage on the LEDs.
 		leds_display_battery_soc((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
 		
+#if DYSON_VERSION == 10
 		//Send the USART traffic we need to supply to keep the cleaner running
 		serial_send_next_message();
 		delay_ms(60);
+#endif
 	}
 }
 

@@ -8,7 +8,7 @@
 
 #include "serial_debug.h"
 
-#if DYSON_VER == 11
+#if DYSON_VERSION == 11
 
 #define SERIAL_MSG_DELIM_CHAR 0x12
 #define MSG_NUM_OFFSET 0x08
