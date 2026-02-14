@@ -14,11 +14,16 @@
 #include "board.h"
 
 #include "bq7693.h"
-#include "serial.h"
 #include "leds.h"
 #include "eeprom_handler.h"
 #include "serial_debug.h"
 #include "config.h"
+
+#if DYSON_VERSION == 10 
+#include "serial.h"
+#elif DYSON_VERSION == 1
+#include "serial_v11.h"
+#endif
 
 void pins_init(void);
 
