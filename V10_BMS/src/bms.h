@@ -20,7 +20,7 @@
 #include "config.h"
 
 #if DYSON_VERSION == 10 
-#include "serial.h"
+#include "serial_v10.h"
 #elif DYSON_VERSION == 11
 #include "serial_v11.h"
 #endif

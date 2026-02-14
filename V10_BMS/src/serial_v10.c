@@ -8,11 +8,9 @@
  #include "config.h"
 
 #if DYSON_VERSION == 10
-
 #include "asf.h"
-#include "serial.h"
-
-#include "leds.h" //fixme
+#include "serial_v10.h"
+#include "leds.h" 
 
 //These are the messages we need to send to the Dyson- copied from a generic clone manufacturer.
 
