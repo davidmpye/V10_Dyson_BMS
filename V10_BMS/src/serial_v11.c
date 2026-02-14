@@ -24,24 +24,22 @@ static inline void pin_set_peripheral_function(uint32_t pinmux) {
 	0x0000FFFF) << (4 * ((pinmux >> 16) & 0x01u)));
 }
 
-//Data is read into here via a callback triggered by usart_read_buffer_job
-uint8_t serial_rx_buf[128];
-size_t serial_rx_buf_index = 0;
-
 typedef enum SERIAL_RX_STATE {
 	AWAITING_START,
 	IN_MSG,
 	MSG_COMPLETE,
 	ESCAPE_CHAR_FOUND,
 } SERIAL_RX_STATE;
-
+//The receiver state
 SERIAL_RX_STATE rx_state = AWAITING_START;
+//Buffer for message
 uint8_t rx_msg_buf[256];
 size_t msg_len = 0;
-
+//Individual bytes read into here by the callback
 uint8_t scratch_buf;
 
 //This function is called by the interrupt handler when a byte has been received.
+//NB - We probably should be smarter about this and do less work in interrupt context.
 void usart_read_callback(struct usart_module *const usart_module) {
 	//Handle special bytes first- delims and escape character should not end up in message itself
 	switch (scratch_buf) {
