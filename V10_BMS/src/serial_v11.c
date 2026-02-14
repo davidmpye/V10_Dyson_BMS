@@ -35,8 +35,6 @@ typedef enum SERIAL_RX_STATE {
 	ESCAPE_CHAR_FOUND,
 } SERIAL_RX_STATE;
 
-//NB the state machine could also be used to handle escaped delimiters?
-
 SERIAL_RX_STATE rx_state = AWAITING_START;
 uint8_t rx_msg_buf[256];
 size_t msg_len = 0;
