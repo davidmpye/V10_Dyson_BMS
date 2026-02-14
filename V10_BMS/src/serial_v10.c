@@ -165,7 +165,7 @@ void serial_send_next_message(){
 	size_t msglen = serial_get_next_block(&data);
 	int result = usart_write_buffer_wait(&usart_instance, data, msglen);
 	if (result != STATUS_OK) {
-		leds_blink_error_led(100);
+		leds_show_error(100);
 	}
 }
 	

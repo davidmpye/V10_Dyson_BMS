@@ -51,7 +51,7 @@ void leds_on() {
 	}
 }
 
-#if DYSON_VER == 10
+#if DYSON_VERSION == 10
 void leds_display_battery_soc(int percent_soc) {
 	//LEDs off to start
 	port_pin_set_output_level(LED_BAT_LO, false );
@@ -70,7 +70,7 @@ void leds_display_battery_soc(int percent_soc) {
 }
 #endif
 
-#if DYSON_VER == 10
+#if DYSON_VERSION == 10
 void leds_flash_charging_segment(int percent_soc) {
 	if (percent_soc <35) {	
 		//Flash lo
