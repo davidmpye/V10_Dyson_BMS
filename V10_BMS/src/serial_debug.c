@@ -47,9 +47,14 @@ void serial_debug_init() {
 	}
 	//Enable
 	usart_enable(&debug_usart);
-	
+
+#if DYSON_VERSION == 10
+	serial_debug_send_message("Dyson V10 BMS Aftermarket firmware init\r\n");
+#elif DYSON_VERSION == 11
+	serial_debug_send_message("Dyson V11 *EXPERIMENTAL* BMS Aftermarket firmware init\r\n");
+#endif
+
 	//Initial debug blurb
-	serial_debug_send_message("Dyson V10/V11 BMS Aftermarket firmware init\r\n");
 	serial_debug_send_message("(C) David Pye davidmpye@gmail.com\r\n");
 	serial_debug_send_message("GNU GPL v3.0 or later\r\n");
 	//Need to pause 250mS before cell voltages are available from the BQ7693
