@@ -13,7 +13,8 @@
 #include <ctype.h>
 #include <inttypes.h>
 #include <string.h> //for memcpy
- 
+#include <asf.h>
+
 #include "eeprom.h"
 #include "nvm.h"
 
@@ -29,8 +30,8 @@ volatile struct eeprom_data {
 
 int eeprom_init(void);
 
-int eeprom_read();
-int eeprom_write();
+int eeprom_read(void);
+int eeprom_write(void);
 
 int eeprom_fuses_set(void);
 
