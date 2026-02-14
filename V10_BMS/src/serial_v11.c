@@ -6,6 +6,9 @@
  *  Licence: GNU GPL v3 or later
  */ 
 
+#if DYSON_VERSION == 11
+
+
 #include "asf.h"
 #include "serial_v11.h"
 
@@ -45,7 +48,7 @@ uint8_t scratch_buf;
 void usart_read_callback(struct usart_module *const usart_module) {
 	//Handle special bytes first- delims and escape character should not end up in message itself
 	switch (scratch_buf) {
-		case 0x12: //delim
+		case SERIAL_MSG_DELIM_CHAR: //delim
 			if (rx_state == AWAITING_START) 
 				rx_state = IN_MSG; //this is start of message
 			else if (rx_state = IN_MSG) 
@@ -105,7 +108,6 @@ void usart_read_callback(struct usart_module *const usart_module) {
 	usart_read_buffer_job(&usart_instance, &scratch_buf, 1);
 }
 
-
 void serial_init() {	
 	//Set up the pinmux settings for SERCOM2
 	pin_set_peripheral_function(PINMUX_PA14C_SERCOM2_PAD2);
@@ -134,3 +136,6 @@ void serial_init() {
 	//Start read job - first byte to start of buffer
 	usart_read_buffer_job(&usart_instance, &scratch_buf, 1);
 }
+
+
+#endif
