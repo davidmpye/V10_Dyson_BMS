@@ -10,9 +10,14 @@
 //speed of LED sequence
 #define LED_SEQ_TIME 10
 
+#if DYSON_VERSION == 10
 #define NUM_LEDS 6
 uint16_t leds[] = { LED_FILTER, LED_BLOCKED, LED_ERR, LED_BAT_LO, LED_BAT_MED, LED_BAT_HI };
-	
+#elif DYSON_VERSION == 11
+#define NUM_LEDS 2
+uint16_t leds[] = { LED_LEFT, LED_RIGHT };
+#endif
+
 void leds_init() {
 	//Set up the LED pins as IO
 	struct port_config led_port_config;
@@ -46,6 +51,7 @@ void leds_on() {
 	}
 }
 
+#if DYSON_VER == 10
 void leds_display_battery_soc(int percent_soc) {
 	//LEDs off to start
 	port_pin_set_output_level(LED_BAT_LO, false );
@@ -62,7 +68,9 @@ void leds_display_battery_soc(int percent_soc) {
 		port_pin_set_output_level(LED_BAT_HI, true );
 	}
 }
+#endif
 
+#if DYSON_VER == 10
 void leds_flash_charging_segment(int percent_soc) {
 	if (percent_soc <35) {	
 		//Flash lo
@@ -90,23 +98,50 @@ void leds_flash_charging_segment(int percent_soc) {
 		delay_ms(500);
 	}
 }
+#endif
 
-void leds_blink_error_led(int ms) {
+void leds_show_error(int ms) {
+#if DYSON_VERSION == 10
+		//Flash the error LED
 		port_pin_set_output_level(LED_ERR, true );
 		delay_ms(ms/2);
 		port_pin_set_output_level(LED_ERR, false );
 		delay_ms(ms/2);
+#else
+		//Alt flash L and R
+		port_pin_set_output_level(LED_LEFT, true );
+		delay_ms(ms/2);
+		port_pin_set_output_level(LED_LEFT, false );
+		port_pin_set_output_level(LED_RIGHT, true );
+		delay_ms(ms/2);
+		port_pin_set_output_level(LED_RIGHT, false );
+#endif
 }
 
 void leds_show_pack_flat() {
+#if DYSON_VERSION == 10
+	//Blink the lowest battery segment LED
 	for (int i=0; i<5; ++i) {
 		port_pin_set_output_level(LED_BAT_LO, true );
 		delay_ms(100);
 		port_pin_set_output_level(LED_BAT_LO, false );
 		delay_ms(100);
 	}
+#elif DYSON_VERSION == 11 
+	//Three short flashes of both left and right LEDs
+	for (int i=0; i<3; ++i) {
+		port_pin_set_output_level(LED_LEFT, true );
+		port_pin_set_output_level(LED_RIGHT, true );
+		delay_ms(200);
+		port_pin_set_output_level(LED_LEFT, false );
+		port_pin_set_output_level(LED_RIGHT, false );
+		delay_ms(200);
+	}
+
+#endif
 }
 
+#if DYSON_VERSION == 10
 void leds_show_filter_err_status(bool status) {
 	port_pin_set_output_level(LED_FILTER, status );
 }
@@ -114,3 +149,4 @@ void leds_show_filter_err_status(bool status) {
 void leds_show_blocked_err_status(bool status) {
 	port_pin_set_output_level(LED_BLOCKED, status);	
 }
+#endif

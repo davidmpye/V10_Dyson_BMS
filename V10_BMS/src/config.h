@@ -15,18 +15,30 @@
 
 #define DYSON_VERSION 11
 
-// Pin definitions
-#define LED_FILTER PIN_PA01
-#define LED_BLOCKED PIN_PA00
-#define LED_ERR PIN_PA19
+// LED pin definitions
+#if DYSON_VERSION == 10
+    //Error LEDs
+    #define LED_FILTER PIN_PA01
+    #define LED_BLOCKED PIN_PA00
+    #define LED_ERR PIN_PA19
+    //Battery charge/discharge indicators
+    #define LED_BAT_LO PIN_PA25
+    #define LED_BAT_MED PIN_PA24
+    #define LED_BAT_HI PIN_PA18
+#elif DYSON_VERSION == 11
+    //Just two blue LEDs - one left, one right
+    #define LED_RIGHT PIN_PA19
+    #define LED_LEFT PIN_PA00
+#endif
 
-//Battery charge/discharge indicators
-#define LED_BAT_LO PIN_PA25
-#define LED_BAT_MED PIN_PA24
-#define LED_BAT_HI PIN_PA18
 
-//- seems to go to Q3 on the charger inlet side of things, push it high to accept a charge
+//Charge pin - dependent on HW version
+//seems to go to Q3 on the charger inlet side of things, push it high to accept a charge
+#if DYSON_VERSION == 10
 #define ENABLE_CHARGE_PIN PIN_PA02 
+#elif DYSON_VERSION == 11
+#define ENABLE_CHARGE_PIN PIN_PA01
+#endif
 
 //PA28 appears to be ALERT pin from the BQ7693
 #define BQ7693_ALERT_PIN PIN_PA28

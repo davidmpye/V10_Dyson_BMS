@@ -17,7 +17,7 @@ int eeprom_init() {
 		//Show a few slow flashes to make it clear we're up to something, then reprogram fuses and reset 
 		//the mcu.
 		for (int i=0; i<4; ++i) {
-			leds_blink_error_led(2000);
+			leds_show_error(2000);
 		}
 		//This will update the fuses then reset the MCU
 		eeprom_fuses_set();

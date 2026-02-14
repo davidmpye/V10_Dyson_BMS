@@ -336,13 +336,16 @@ void bms_handle_discharging() {
 #ifdef SERIAL_DEBUG
 	serial_debug_send_message("Starting discharge\r\n");
 #endif
+
+#if DYSON_VER == 10
 	//Show the battery voltage on the LEDs.
 	leds_display_battery_soc((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
-	
+#endif
+
 	if (bms_is_safe_to_discharge()) {
 		//Sanity check, hopefully already checked prior to here!
 		bq7693_enable_discharge();
-#if DYSON_VER == 11
+#if DYSON_VER == 10
 		//Reset the UART message counter;
 		serial_reset_message_counter();
 #endif
@@ -371,10 +374,10 @@ void bms_handle_discharging() {
 		}
 		
 		//No errors, and trigger pressed, so we continue to discharge.
-		//Show the battery voltage on the LEDs.
-		leds_display_battery_soc((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
 		
 #if DYSON_VERSION == 10
+		//Show the battery voltage on the LEDs.
+		leds_display_battery_soc((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
 		//Send the USART traffic we need to supply to keep the cleaner running
 		serial_send_next_message();
 		delay_ms(60);
@@ -401,7 +404,7 @@ void bms_handle_fault() {
 		else {
 			//Flash the red error led the number of times indicated by the fault code.
 			for (int i=0; i<bms_error; ++i) {
-				leds_blink_error_led(500);
+				leds_show_error(500);
 			}
 			delay_ms(2000);
 		}
@@ -454,9 +457,13 @@ void bms_handle_charging() {
 	int charge_pause_counter = 0;
 	while (1) {
 		//Charging now in progress.		
+#if DYSON_VER == 10
 		//Show flashing LED segment to indicate we are charging.
 		leds_flash_charging_segment((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
-	
+#elif DYSON_VER == 11 
+
+#endif
+
 #ifdef SERIAL_DEBUG
 		sprintf(debug_msg_buffer,"Charging at %d mA, %d mAH, capacity %d mAH, Temp %d'C\r\n", currentmA, eeprom_data.current_charge_level/1000, eeprom_data.total_pack_capacity/1000, 
 		bq7693_read_temperature()/10);
@@ -496,7 +503,11 @@ void bms_handle_charging() {
 			//Delay for 30 seconds, then go and try again.	
 			for (int i=0; i<30; ++i) {
 				//This function takes a second.
+#if DYSON_VERSION == 10
 				leds_flash_charging_segment((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
+#else
+				delay_ms(1000);
+#endif
 				//Check the charger hasn't been unplugged while we're waiting
 				//If it has, abandon the charge process and return to main loop
 				if (!port_pin_get_input_level(CHARGER_CONNECTED_PIN)) {
@@ -556,7 +567,7 @@ void bms_handle_charger_unplugged() {
 	
 	//Flash the error led for 100ms for each 50mV the pack is out of balance
 	for (int i=0; i<round(spread/50); ++i) {
-		leds_blink_error_led(100);	
+		leds_show_error(100);	
 	}
 
 #ifdef SERIAL_DEBUG
