@@ -15,9 +15,13 @@
 #include "leds.h" //fixme
 
 //These are the messages we need to send to the Dyson- copied from a generic clone manufacturer.
-//It appears to be a sequence rollover attack, which means the vacuum cleaner accepts.
-//By setting the sequence number to 0xFF, then rolling it over, we can get away with the same series of 4 CRC 'magic bytes' without
-//being able to generate them ourselves.
+
+//The last 4 bytes of each message are a complex CRC calculation, with the init value of the CRC being set from a matrix table
+//based on command and sequence.  
+//The clone manufacturer uses a sequence rollover attack, which means the vacuum cleaner accepts the same series of messages
+//over and over again. (Note sequence byte [8] starts as 0xFF->0x00->0x01->0x02->0x0F etc)
+//Therefore although it's probably possible to reverse the algorithm (likely similar to V11), 
+//there isn't any real advantage to doing so.
 
 //The first block are sent at first trigger pull.
 uint8_t serial_first_messages[][21] = {
