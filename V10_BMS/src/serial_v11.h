@@ -5,6 +5,7 @@
  *  Contact: davidmpye@gmail.com
  *  Licence: GNU GPL v3 or later
  */ 
+#include "config.h"
 
 #include "serial_debug.h"
 

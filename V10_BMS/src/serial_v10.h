@@ -1,5 +1,5 @@
 /*
- * serial.h
+ * serial_v10.h
  *
  *  Author:  David Pye
  *  Contact: davidmpye@gmail.com
@@ -7,7 +7,8 @@
  */ 
 
 #include "serial_debug.h"
-
+#include "config.h"
+#if DYSON_VERSION == 10
 /* This is a bit of info about the serial protocol, which I don't fully understand.
 
 There are variable length messages, of which the 21 byte long messages seem to contain filter/blocked status.
@@ -27,3 +28,5 @@ void serial_init(void);
 size_t serial_get_next_block(uint8_t **);
 void serial_send_next_message(void);
 void serial_reset_message_counter(void);
+
+#endif

@@ -5,9 +5,8 @@
  *  Contact: davidmpye@gmail.com
  *  Licence: GNU GPL v3 or later
  */ 
-
+#include "config.h"
 #if DYSON_VERSION == 11
-
 
 #include "asf.h"
 #include "serial_v11.h"
