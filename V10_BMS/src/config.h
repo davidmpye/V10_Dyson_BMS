@@ -9,6 +9,17 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+//Set this for which Dyson battery you are targetting
+//Implemented: 10
+//In progress: 11
+
+#define DYSON_VERSION 10
+
+#if DYSON_VERSION == 11 
+    #error Not implemented
+#endif
+
+
 // Pin definitions
 #define LED_FILTER PIN_PA01
 #define LED_BLOCKED PIN_PA00
