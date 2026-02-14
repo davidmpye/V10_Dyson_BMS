@@ -16,9 +16,8 @@
 #include "bq7693.h"
 
 void serial_debug_init(void);
-void serial_debug_send_message(char *msg);
-
-void serial_debug_send_cell_voltages();
+void serial_debug_send_message(const char *msg);
+void serial_debug_send_cell_voltages(void);
 
 extern char *debug_msg_buffer;
 #endif /* SERIAL_DEBUG_H_ */
