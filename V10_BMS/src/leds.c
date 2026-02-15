@@ -152,8 +152,8 @@ void leds_show_blocked_err_status(bool status) {
 #endif
 
 #if DYSON_VERSION == 11 
-
 void leds_show_charging() {
-	
+	//For now, we will just put the left sided light on.
+	port_pin_set_output_level(LED_LEFT, true );
 }
 #endif
