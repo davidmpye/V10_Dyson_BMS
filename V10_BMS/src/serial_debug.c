@@ -67,7 +67,7 @@ void serial_debug_init() {
 void serial_debug_send_message(const char *msg) {
 #ifdef SERIAL_DEBUG
 	//Wait until the USART is ready to send
-	while (usart_get_job_status != STATUS_BUSY); 
+	while (usart_get_job_status == STATUS_BUSY) {}
 	usart_write_buffer_job(&debug_usart, msg, strlen(msg));
 #else
 	return 0;
