@@ -176,3 +176,13 @@ add_custom_target(flash
     COMMENT "Flashing $<TARGET_FILE:${PROJECT_NAME}.elf> using OpenOCD"
 )
 
+# This will unlock (and fully erase) a Dyson pack with the firmware protection enabled
+# It will need to be programmed after this
+add_custom_target(unlock
+    COMMAND openocd
+        -f ${OPENOCD_CFG}
+        -c "\"init; at91samd.cpu mwb 0x41002100 0x10; sleep 500; reset; halt; exit\""
+    DEPENDS ${PROJECT_NAME}.elf
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Flashing $<TARGET_FILE:${PROJECT_NAME}.elf> using OpenOCD"
+)

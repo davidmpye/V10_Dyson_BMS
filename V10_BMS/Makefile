@@ -34,6 +34,8 @@ debug: build
 erase:
 	$(CMAKE) --build $(BUILD_DIR) --target erase
 
+unlock:
+	$(CMAKE) --build $(BUILD_DIR) --target unlock
 # --- Clean build directory ---
 clean:
 	@echo "Removing build directory..."
