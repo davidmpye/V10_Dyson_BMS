@@ -150,3 +150,10 @@ void leds_show_blocked_err_status(bool status) {
 	port_pin_set_output_level(LED_BLOCKED, status);	
 }
 #endif
+
+#if DYSON_VERSION == 11 
+
+void leds_show_charging() {
+	
+}
+#endif

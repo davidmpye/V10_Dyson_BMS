@@ -337,7 +337,7 @@ void bms_handle_discharging() {
 	serial_debug_send_message("Starting discharge\r\n");
 #endif
 
-#if DYSON_VER == 10
+#if DYSON_VERSION == 10
 	//Show the battery voltage on the LEDs.
 	leds_display_battery_soc((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
 #endif
@@ -345,7 +345,7 @@ void bms_handle_discharging() {
 	if (bms_is_safe_to_discharge()) {
 		//Sanity check, hopefully already checked prior to here!
 		bq7693_enable_discharge();
-#if DYSON_VER == 10
+#if DYSON_VERSION == 10
 		//Reset the UART message counter;
 		serial_reset_message_counter();
 #endif
@@ -457,11 +457,11 @@ void bms_handle_charging() {
 	int charge_pause_counter = 0;
 	while (1) {
 		//Charging now in progress.		
-#if DYSON_VER == 10
+#if DYSON_VERSION == 10
 		//Show flashing LED segment to indicate we are charging.
 		leds_flash_charging_segment((eeprom_data.current_charge_level*100) / eeprom_data.total_pack_capacity);
-#elif DYSON_VER == 11 
-
+#elif DYSON_VERSION == 11 
+		leds_show_charging();
 #endif
 
 #ifdef SERIAL_DEBUG

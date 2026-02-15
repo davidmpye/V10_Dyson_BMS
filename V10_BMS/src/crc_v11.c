@@ -8,7 +8,7 @@
 #include "crc_v11.h"
 
 
-#if DYSON_VER == 11
+#if DYSON_VERSION == 11
 
 //0x63 message crc table
 const uint8_t matrix_0x63_hi[] = {

@@ -27,6 +27,8 @@ void leds_display_battery_soc(int);
 void leds_flash_charging_segment(int);
 void leds_show_filter_err_status(bool);
 void leds_show_blocked_err_status(bool);
+#elif DYSON_VERSION == 11
+void leds_show_charging();
 #endif
 
 #endif /* LEDS_H_ */

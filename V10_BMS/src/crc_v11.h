@@ -12,7 +12,7 @@
 #include <asf.h>
 #include "config.h"
 
-#if DYSON_VER == 11
+#if DYSON_VERSION == 11
 
 uint16_t init_from_seq(uint8_t seq, uint8_t *matrix_table, uint16_t constant);
 uint16_t crc16(uint8_t *data, size_t len, uint16_t init);
